@@ -7,6 +7,8 @@ import {UserButton} from "@clerk/nextjs";
 import {Separator} from "@/components/ui/separator";
 import SelectBodyDialog from "@/components/SelectBodyDialog";
 import {useState} from "react";
+import SelectExerciseDialog from "@/components/SelectExerciseDialog";
+import AddExerciseDialog from "@/components/AddExerciseDialog";
 
 type Props = {};
 
@@ -24,7 +26,29 @@ const DashboardPage = (props: Props) => {
 
     const today = getDate()
 
-    const [bodyPart, setBodyPart] = useState("");
+    const [selectedExercise, setSelectedExercise] = useState("");
+
+    const [isBodyDialogOpen, setIsBodyDialogOpen] = useState(false);
+    const [selectedBodyPart, setSelectedBodyPart] = useState("")
+    const [isExerciseDialogOpen, setIsExerciseDialogOpen] = useState(false);
+    const [isAddExerciseDialogOpen, setIsAddExerciseDialogOpen] = useState(false);
+
+
+
+    const handleBodyPartSelected = (bodyPart:any) => {
+        setSelectedBodyPart(bodyPart);
+        setIsBodyDialogOpen(false);
+        setIsExerciseDialogOpen(true);
+    };
+
+    const handleExerciseSelected = (exercise:any) => {
+        // This is where you would handle the exercise selection,
+        // for example, opening a dialog to choose the number of sets.
+        setIsExerciseDialogOpen(false)
+        setIsAddExerciseDialogOpen(true)
+    };
+
+    console.log("Dashboard Render")
 
     return (
         <>
@@ -56,9 +80,23 @@ const DashboardPage = (props: Props) => {
 
                 {/* display all the exercises*/}
                 <div className="grid sm:grid-cols-3 md:grid-cols-5 grid-cols-1 gap-3">
-                    <SelectBodyDialog />
+                    <SelectBodyDialog
+                        isOpen={isBodyDialogOpen}
+                        onOpenChange={() => setIsBodyDialogOpen(prev => !prev)}
+                        onBodyPartSelected={handleBodyPartSelected}
+                    />
+                    {isExerciseDialogOpen && <SelectExerciseDialog
+                        isOpen={isExerciseDialogOpen}
+                        onOpenChange={() => setIsExerciseDialogOpen(prev => !prev)}
+                        bodyPart={selectedBodyPart}
+                        onExerciseSelected={handleExerciseSelected}
+                    />}
+                    {isAddExerciseDialogOpen && <AddExerciseDialog
+                        isOpen={isAddExerciseDialogOpen}
+                        onOpenChange={() => setIsAddExerciseDialogOpen(prev => !prev)}
+                        exercise={selectedExercise} />
+                    }
                 </div>
-
             </div>
         </div>
 
