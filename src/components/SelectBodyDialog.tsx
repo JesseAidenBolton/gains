@@ -20,7 +20,7 @@ interface SelectBodyDialogProps {
 
 const SelectBodyDialog: React.FC<SelectBodyDialogProps> = ({ isOpen, onOpenChange, onBodyPartSelected }) => {
 
-    console.log("SelectBody Render")
+
     return (
         <div>
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
