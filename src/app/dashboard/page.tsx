@@ -44,11 +44,11 @@ const DashboardPage = (props: Props) => {
     const handleExerciseSelected = (exercise:any) => {
         // This is where you would handle the exercise selection,
         // for example, opening a dialog to choose the number of sets.
+        setSelectedExercise(exercise.exercise)
         setIsExerciseDialogOpen(false)
         setIsAddExerciseDialogOpen(true)
     };
 
-    console.log("Dashboard Render")
 
     return (
         <>

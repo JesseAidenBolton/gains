@@ -20,7 +20,6 @@ const SelectExerciseDialog: React.FC<SelectExerciseDialogProps> = ({ isOpen, onO
 
     const exercisesForBodyPart = exerciseList.find(group => group.muscle === bodyPart)?.exercises || [];
 
-    console.log("SelectExercise Render")
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent>
