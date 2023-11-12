@@ -3,14 +3,32 @@
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import {ArrowBigLeft} from "lucide-react";
-import {UserButton} from "@clerk/nextjs";
+import {auth, useClerk, UserButton} from "@clerk/nextjs";
 import {Separator} from "@/components/ui/separator";
 import SelectBodyDialog from "@/components/SelectBodyDialog";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import SelectExerciseDialog from "@/components/SelectExerciseDialog";
 import AddExerciseDialog from "@/components/AddExerciseDialog";
+import {db} from "@/lib/db";
+import {eq} from "drizzle-orm";
+import {$workouts} from "@/lib/db/schema";
+import ExerciseCard from "@/components/ExerciseCard";
 
 type Props = {};
+
+interface Set {
+    weight: string;
+    reps: string;
+}
+
+
+interface Exercise {
+    id: number;
+    name: string;
+    userId: string;
+    date: Date;
+    exercises: unknown
+}
 
 const getDate = () => {
     const today = new Date();
@@ -24,6 +42,35 @@ const getDate = () => {
 
 const DashboardPage = (props: Props) => {
 
+    const { user } = useClerk();
+    const userId = user?.id; // Access the user's ID
+
+    const [exercises, setExercises] = useState<Exercise[]>([]);
+
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchExercises = async () => {
+            try {
+                setIsLoading(true);
+                const fetchedExercises = await db.select().from($workouts).where(
+                    eq($workouts.userId, userId!)
+                );
+                setExercises(fetchedExercises);
+            } catch (error) {
+                console.error('Error fetching exercises:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        // Fetch data when the component mounts
+        if (userId) {
+            fetchExercises();
+        }
+    }, [userId]);
+
+
     const today = getDate()
 
     const [selectedExercise, setSelectedExercise] = useState("");
@@ -34,7 +81,6 @@ const DashboardPage = (props: Props) => {
     const [isAddExerciseDialogOpen, setIsAddExerciseDialogOpen] = useState(false);
 
 
-
     const handleBodyPartSelected = (bodyPart:any) => {
         setSelectedBodyPart(bodyPart);
         setIsBodyDialogOpen(false);
@@ -42,12 +88,12 @@ const DashboardPage = (props: Props) => {
     };
 
     const handleExerciseSelected = (exercise:any) => {
-        // This is where you would handle the exercise selection,
-        // for example, opening a dialog to choose the number of sets.
         setSelectedExercise(exercise.exercise)
         setIsExerciseDialogOpen(false)
         setIsAddExerciseDialogOpen(true)
     };
+
+
 
 
     return (
@@ -69,22 +115,38 @@ const DashboardPage = (props: Props) => {
                         <UserButton />
                     </div>
                 </div>
+
+
                 <div className="h-8"></div>
                 <Separator />
                 <div className="h-8"></div>
-                {/* list exercises */}
-                {/* TODO conditionally render */}
-                <div className="text-center">
-                    <h2 className="text-xl text-gray-500">No exercises added. Click on Add to start. </h2>
-                </div>
+                 {/*display all the exercises
+                if no exercises, display*/}
+                {exercises.length === 0 && (
+                    <div className="text-center">
+                        <h2 className="text-xl text-gray-500">No exercises added. Click on Add to start. </h2>
+                    </div>
+                )}
 
-                {/* display all the exercises*/}
-                <div className="grid sm:grid-cols-3 md:grid-cols-5 grid-cols-1 gap-3">
+                {/*add exercise*/}
+                <div className="grid sm:grid-cols-3 md:grid-cols-3 grid-cols-1 gap-">
                     <SelectBodyDialog
                         isOpen={isBodyDialogOpen}
                         onOpenChange={() => setIsBodyDialogOpen(prev => !prev)}
                         onBodyPartSelected={handleBodyPartSelected}
                     />
+
+                    {/*list exercises*/}
+                    {exercises.length > 0 && (
+                        <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {exercises.map(exercise => (
+                                <div key={exercise.id} className="border border-stone-300 rounded-lg overflow-hidden flex flex-col hover:shadow-xl transition hover:-translate-y-1">
+                                    <ExerciseCard exercise={exercise} />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
                     {isExerciseDialogOpen && <SelectExerciseDialog
                         isOpen={isExerciseDialogOpen}
                         onOpenChange={() => setIsExerciseDialogOpen(prev => !prev)}

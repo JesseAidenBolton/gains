@@ -1,19 +1,19 @@
-import {useCallback, useState} from "react";
-
-
-
-
+import {useCallback, useEffect, useState} from "react";
 import {Button} from "@/components/ui/button";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
-import {Minus, Plus} from "lucide-react";
+import {Loader2, Minus, Plus} from "lucide-react";
+import {useMutation} from "@tanstack/react-query";
+import axios from "axios";
+
 
 
 interface AddExerciseDialogProps {
     isOpen: boolean;
     onOpenChange: () => void;
     exercise: string;
+    lastSets?: Set[]
     //onExerciseSelected: (exercise: Exercise) => void;
     // getExercises: (bodyPart: string) => Exercise[];
 }
@@ -23,13 +23,44 @@ interface Set {
     reps: string;
 }
 
+interface Exercise {
+    id: number;
+    name: string;
+    userId: string;
+    date: Date;
+    exercises: unknown
+}
 
-const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenChange, exercise}) => {
+
+const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenChange, exercise, lastSets}) => {
 
     const [numSets, setNumSets] = useState<number>(0);
     const [sets, setSets] = useState<Set[]>([]);
 
+    const addExercise = useMutation({
+        mutationFn: async () => {
+            const response = await axios.post('/api/addExercise', {
+                name: exercise,
+                sets: sets
+            })
+            return response.data
+        }
+    })
 
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+
+        addExercise.mutate(undefined, {
+            onSuccess: () => {
+                console.log('exercise added')
+            },
+            onError: error => {
+                console.log(error)
+            }
+        });
+
+    }
 
     const increase = useCallback(() => {
         setNumSets((prevSets) => {
@@ -54,8 +85,18 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
             idx === index ? { ...set, [field]: value } : set
         );
         setSets(newSets);
+
     };
 
+    useEffect(() => {
+
+        if (lastSets && lastSets.length > 0) {
+            // Set the number of sets
+            setNumSets(lastSets.length);
+
+            setSets(lastSets);
+        }
+    }, []);
 
 
     // Create a list of input elements for sets
@@ -69,6 +110,7 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
                 min="0"
                 step="0.5"
                 className="col-span-2 h-8"
+                value={sets[index]?.weight || ''}
                 onChange={(e) => handleInputChange(index, 'weight', e.target.value)}
 
             />
@@ -79,16 +121,16 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
                 placeholder="Reps"
                 min="0"
                 className="col-span-2 h-8"
+                value={sets[index]?.reps || ''}
                 onChange={(e) => handleInputChange(index, 'reps', e.target.value)}
 
             />
         </div>
     ));
 
-    console.log(sets)
 
     return (
-        <form>
+
         <Popover open={isOpen} onOpenChange={onOpenChange}>
             <PopoverTrigger>
             </PopoverTrigger>
@@ -104,15 +146,22 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
                                 <Plus className="w-4 h-4" strokeWidth={3} />
                             </Button>
                         </div>
+                        <form onSubmit={handleSubmit}>
                         {setInputs}
                         <div className="m-4"></div>
                         <div className="flex items-center">
-                            <Button type="submit" className="bg-amber-500">Save Exercise</Button>
+                            <Button type="submit" className="bg-amber-500" disabled={addExercise.isPending}>
+                                {addExercise.isPending && (
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                )}
+                                Save Exercise
+                            </Button>
                         </div>
+                        </form>
                     </div>
             </PopoverContent>
         </Popover>
-        </form>
+
     );
 };
 export default AddExerciseDialog;
