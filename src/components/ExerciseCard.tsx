@@ -20,9 +20,10 @@ interface Exercise {
 // Additional properties needed for ExerciseCard
 interface ExerciseCardProps {
     exercise: Exercise;
+    refetchExercises: () => void;
 }
 
-const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise }) => {
+const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, refetchExercises}) => {
     const exercisesArray = exercise.exercises as { name: string; sets: Set[] }[]; // Type assertion
 
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -71,6 +72,8 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise }) => {
                     onOpenChange={() => setIsEditDialogOpen(false)}
                     exercise={exercise.name}
                     lastSets={exercisesArray[0].sets.map((set => set))}
+                    id={exercise.id}
+                    refetchExercises={refetchExercises}
                 />
             )}
         </div>

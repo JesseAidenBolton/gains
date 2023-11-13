@@ -4,47 +4,49 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { $workouts } from "@/lib/db/schema";
+import {eq} from "drizzle-orm";
 
 export async function POST(req: Request) {
     const { userId } = auth();
     if (!userId) {
-        return new NextResponse("unauthorised", { status: 401 });
+        return new NextResponse("unauthorized", { status: 401 });
     }
 
     try {
         const body = await req.json();
-        const { sets, name } = body;
+        const { sets, name, id } = body;
 
-        // Log the received sets data
-        //console.log(sets);
-
-        /*// store each set separately
-        const insertPromises = sets.map(async (set: any) => {
-            await db.insert($workouts).values({
+        if (id) {
+            // Updating an existing exercise
+            const exerciseToUpdate = {
                 date: new Date(),
                 name: name,
                 userId: userId,
-                exercises: [{ sets: [set] }],
-            });
-        });*/
+                exercises: [{ sets: sets }],
+                // Include id only for the update
+                id: id
+            };
 
-        const exercise = {
-            date: new Date(), // Replace with the actual date
-            name: name,
-            userId: userId,
-            exercises: [{ sets: sets }], // Store all sets for a particular exercise in one entry
-        };
+            const updated = await db.update($workouts)
+                .set(exerciseToUpdate)
+                .where(eq($workouts.id, id))
+                .execute();
 
+            if (updated.rowCount === 0) {
+                return new NextResponse("exercise not found", { status: 404 });
+            }
+        } else {
+            // Inserting a new exercise
+            const newExercise = {
+                date: new Date(),
+                name: name,
+                userId: userId,
+                exercises: [{ sets: sets }]
+                // Exclude the id field here
+            };
 
-        // Wait for all insert operations to complete
-        //await Promise.all(insertPromises);
-
-
-        // Insert the exercise into the database
-        await db.insert($workouts).values(exercise);
-
-
-        console.log("Inserted into the database");
+            await db.insert($workouts).values(newExercise).execute();
+        }
 
         return new NextResponse("success");
     } catch (error) {

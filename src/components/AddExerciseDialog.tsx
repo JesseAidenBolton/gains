@@ -14,6 +14,8 @@ interface AddExerciseDialogProps {
     onOpenChange: () => void;
     exercise: string;
     lastSets?: Set[]
+    id?: number;
+    refetchExercises: () => void;
     //onExerciseSelected: (exercise: Exercise) => void;
     // getExercises: (bodyPart: string) => Exercise[];
 }
@@ -32,7 +34,7 @@ interface Exercise {
 }
 
 
-const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenChange, exercise, lastSets}) => {
+const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenChange, exercise, lastSets, id,refetchExercises}) => {
 
     const [numSets, setNumSets] = useState<number>(0);
     const [sets, setSets] = useState<Set[]>([]);
@@ -41,7 +43,8 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
         mutationFn: async () => {
             const response = await axios.post('/api/addExercise', {
                 name: exercise,
-                sets: sets
+                sets: sets,
+                id: id
             })
             return response.data
         }
@@ -50,10 +53,11 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-
         addExercise.mutate(undefined, {
             onSuccess: () => {
                 console.log('exercise added')
+                onOpenChange()
+                refetchExercises();
             },
             onError: error => {
                 console.log(error)
@@ -77,7 +81,6 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
             return newSets;
         });
     }, []);
-
 
 
     const handleInputChange = (index: number, field: keyof Set, value: string) => {

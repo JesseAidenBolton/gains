@@ -13,6 +13,7 @@ import {db} from "@/lib/db";
 import {eq} from "drizzle-orm";
 import {$workouts} from "@/lib/db/schema";
 import ExerciseCard from "@/components/ExerciseCard";
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 type Props = {};
 
@@ -44,12 +45,24 @@ const DashboardPage = (props: Props) => {
 
     const { user } = useClerk();
     const userId = user?.id; // Access the user's ID
+    const queryClient = useQueryClient();
 
-    const [exercises, setExercises] = useState<Exercise[]>([]);
+    //const [exercises, setExercises] = useState<Exercise[]>([]);
 
-    const [isLoading, setIsLoading] = useState(true);
+    //const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
+
+    const { data: exercises, isLoading, isError, refetch } = useQuery({
+        queryKey: ['exercises', userId],
+        queryFn: async () => {
+            if (!userId) return [];
+            const fetchedExercises = await db.select().from($workouts).where(eq($workouts.userId, userId));
+            return fetchedExercises;
+        },
+        enabled: !!userId // Fetch only when userId is available
+    });
+
+    /*useEffect(() => {
         const fetchExercises = async () => {
             try {
                 setIsLoading(true);
@@ -68,7 +81,7 @@ const DashboardPage = (props: Props) => {
         if (userId) {
             fetchExercises();
         }
-    }, [userId]);
+    }, [userId]);*/
 
 
     const today = getDate()
@@ -120,16 +133,27 @@ const DashboardPage = (props: Props) => {
                 <div className="h-8"></div>
                 <Separator />
                 <div className="h-8"></div>
-                 {/*display all the exercises
-                if no exercises, display*/}
-                {exercises.length === 0 && (
+                {/* Display all the exercises. If no exercises, display a message */}
+                {isLoading ? (
+                    <div>Loading...</div>
+                ) : isError ? (
+                    <div>Error loading exercises.</div>
+                ) : exercises && exercises.length > 0 ? (
+                    <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {exercises.map(exercise => (
+                            <div key={exercise.id} className="border border-stone-300 rounded-lg overflow-hidden flex flex-col hover:shadow-xl transition hover:-translate-y-1">
+                                <ExerciseCard exercise={exercise} refetchExercises={refetch} />
+                            </div>
+                        ))}
+                    </div>
+                ) : (
                     <div className="text-center">
-                        <h2 className="text-xl text-gray-500">No exercises added. Click on Add to start. </h2>
+                        <h2 className="text-xl text-gray-500">No exercises added. Click on Add to start.</h2>
                     </div>
                 )}
 
                 {/*add exercise*/}
-                <div className="grid sm:grid-cols-3 md:grid-cols-3 grid-cols-1 gap-">
+                <div className="grid sm:grid-cols-3 md:grid-cols-1 grid-cols-1 gap-2">
                     <SelectBodyDialog
                         isOpen={isBodyDialogOpen}
                         onOpenChange={() => setIsBodyDialogOpen(prev => !prev)}
@@ -137,7 +161,7 @@ const DashboardPage = (props: Props) => {
                     />
 
                     {/*list exercises*/}
-                    {exercises.length > 0 && (
+                    {/*{exercises.length > 0 && (
                         <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {exercises.map(exercise => (
                                 <div key={exercise.id} className="border border-stone-300 rounded-lg overflow-hidden flex flex-col hover:shadow-xl transition hover:-translate-y-1">
@@ -145,7 +169,7 @@ const DashboardPage = (props: Props) => {
                                 </div>
                             ))}
                         </div>
-                    )}
+                    )}*/}
 
                     {isExerciseDialogOpen && <SelectExerciseDialog
                         isOpen={isExerciseDialogOpen}
@@ -153,10 +177,14 @@ const DashboardPage = (props: Props) => {
                         bodyPart={selectedBodyPart}
                         onExerciseSelected={handleExerciseSelected}
                     />}
-                    {isAddExerciseDialogOpen && <AddExerciseDialog
+                    {isAddExerciseDialogOpen && (<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                        <AddExerciseDialog
                         isOpen={isAddExerciseDialogOpen}
                         onOpenChange={() => setIsAddExerciseDialogOpen(prev => !prev)}
-                        exercise={selectedExercise} />
+                        exercise={selectedExercise}
+                        refetchExercises={refetch}
+
+                    /></div>)
                     }
                 </div>
             </div>
