@@ -6,14 +6,16 @@ import {ArrowBigLeft} from "lucide-react";
 import {auth, useClerk, UserButton} from "@clerk/nextjs";
 import {Separator} from "@/components/ui/separator";
 import SelectBodyDialog from "@/components/SelectBodyDialog";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import SelectExerciseDialog from "@/components/SelectExerciseDialog";
 import AddExerciseDialog from "@/components/AddExerciseDialog";
 import {db} from "@/lib/db";
-import {eq} from "drizzle-orm";
+import {and, eq, gte, lte} from "drizzle-orm";
 import {$workouts} from "@/lib/db/schema";
 import ExerciseCard from "@/components/ExerciseCard";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import CalendarComponent from "@/components/CalendarComponent";
+import {endOfDay, format, startOfDay} from "date-fns";
 
 type Props = {};
 
@@ -47,42 +49,35 @@ const DashboardPage = (props: Props) => {
     const userId = user?.id; // Access the user's ID
     const queryClient = useQueryClient();
 
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+
     //const [exercises, setExercises] = useState<Exercise[]>([]);
 
     //const [isLoading, setIsLoading] = useState(true);
 
+    console.log(`selectedDate ${selectedDate}`);
 
     const { data: exercises, isLoading, isError, refetch } = useQuery({
-        queryKey: ['exercises', userId],
+        queryKey: ['exercises', userId, selectedDate],
         queryFn: async () => {
-            if (!userId) return [];
-            const fetchedExercises = await db.select().from($workouts).where(eq($workouts.userId, userId));
+            if (!userId || !selectedDate) return [];
+
+            const formattedStartOfDay  = format(startOfDay(selectedDate), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'');
+            const formattedEndOfDay  = format(endOfDay(selectedDate), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'');
+
+            const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+            const dateObjectStart = new Date(formattedStartOfDay);
+            const dateObjectEnd = new Date(formattedEndOfDay);
+
+            const fetchedExercises = await db.select().from($workouts)
+                .where(and(
+                    eq($workouts.userId, userId),
+                    gte($workouts.date, dateObjectStart),
+                    lte($workouts.date, dateObjectEnd)));
             return fetchedExercises;
         },
-        enabled: !!userId // Fetch only when userId is available
+        enabled: !!userId && !!selectedDate // Fetch only when userId is available
     });
-
-    /*useEffect(() => {
-        const fetchExercises = async () => {
-            try {
-                setIsLoading(true);
-                const fetchedExercises = await db.select().from($workouts).where(
-                    eq($workouts.userId, userId!)
-                );
-                setExercises(fetchedExercises);
-            } catch (error) {
-                console.error('Error fetching exercises:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        // Fetch data when the component mounts
-        if (userId) {
-            fetchExercises();
-        }
-    }, [userId]);*/
-
 
     const today = getDate()
 
@@ -107,8 +102,6 @@ const DashboardPage = (props: Props) => {
     };
 
 
-
-
     return (
         <>
         <div className="min-h-screen">
@@ -126,6 +119,7 @@ const DashboardPage = (props: Props) => {
                         <h1 className="text-3xl font-bold text-gray-900">{today}</h1>
                         <div className="w-4"></div>
                         <UserButton />
+                        <CalendarComponent selectedDate={selectedDate} onDateChange={(newDate) => setSelectedDate(newDate)} />
                     </div>
                 </div>
 
@@ -133,6 +127,15 @@ const DashboardPage = (props: Props) => {
                 <div className="h-8"></div>
                 <Separator />
                 <div className="h-8"></div>
+
+                {/*add exercise*/}
+                <div className="grid sm:grid-cols-3 md:grid-cols-1 grid-cols-1 gap-2">
+                    <SelectBodyDialog
+                        isOpen={isBodyDialogOpen}
+                        onOpenChange={() => setIsBodyDialogOpen(prev => !prev)}
+                        onBodyPartSelected={handleBodyPartSelected}
+                    />
+
                 {/* Display all the exercises. If no exercises, display a message */}
                 {isLoading ? (
                     <div>Loading...</div>
@@ -151,25 +154,6 @@ const DashboardPage = (props: Props) => {
                         <h2 className="text-xl text-gray-500">No exercises added. Click on Add to start.</h2>
                     </div>
                 )}
-
-                {/*add exercise*/}
-                <div className="grid sm:grid-cols-3 md:grid-cols-1 grid-cols-1 gap-2">
-                    <SelectBodyDialog
-                        isOpen={isBodyDialogOpen}
-                        onOpenChange={() => setIsBodyDialogOpen(prev => !prev)}
-                        onBodyPartSelected={handleBodyPartSelected}
-                    />
-
-                    {/*list exercises*/}
-                    {/*{exercises.length > 0 && (
-                        <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {exercises.map(exercise => (
-                                <div key={exercise.id} className="border border-stone-300 rounded-lg overflow-hidden flex flex-col hover:shadow-xl transition hover:-translate-y-1">
-                                    <ExerciseCard exercise={exercise} />
-                                </div>
-                            ))}
-                        </div>
-                    )}*/}
 
                     {isExerciseDialogOpen && <SelectExerciseDialog
                         isOpen={isExerciseDialogOpen}
