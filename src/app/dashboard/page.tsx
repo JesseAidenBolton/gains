@@ -111,22 +111,23 @@ const DashboardPage = (props: Props) => {
             <div className="max-w-7xl mx-auto p-10">
                 <div className="h-14"></div>
                 <div className="flex justify-between items-center md:flex-row flex-col">
-                    <div className="flex items-center">
+                    {/* Left-aligned items */}
+                    <div className="flex items-center space-x-4">
                         <Link href='/'>
                             <Button className="bg-primary" size="sm">
                                 <ArrowBigLeft className="mr-1 w-4 h-4" />
                                 Back
                             </Button>
                         </Link>
-                        <div className="w-4"></div>
-                        <h1 className="text-3xl font-bold text-gray-900">{formattedDate}</h1>
-                        <div className="w-4"></div>
-                        <UserButton />
-                        <div className="w-4"></div>
                         <CalendarComponent selectedDate={selectedDate} onDateChange={(newDate) => setSelectedDate(newDate)} />
+                        <h1 className="text-3xl font-bold text-gray-900">{formattedDate}</h1>
+                    </div>
+
+                    {/* Right-aligned items */}
+                    <div>
+                        <UserButton />
                     </div>
                 </div>
-
 
                 <div className="h-8"></div>
                 <Separator />

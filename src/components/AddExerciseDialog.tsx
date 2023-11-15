@@ -35,6 +35,9 @@ interface Exercise {
 }
 
 
+
+
+
 const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenChange, exercise, lastSets, id,refetchExercises}) => {
 
     const [numSets, setNumSets] = useState<number>(0);
@@ -102,6 +105,32 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
         }
     }, []);
 
+    const deleteExercise = useMutation({
+        mutationFn: async (exerciseId: number) => {
+            // Assuming you have an endpoint that accepts DELETE requests to delete an exercise
+            const response = await axios.post(`/api/deleteExercise`, {
+                exerciseId
+            });
+            return response.data;
+        },
+        onSuccess: () => {
+            // Handle successful deletion
+            console.log('Exercise deleted');
+            onOpenChange(); // Close the dialog
+            refetchExercises(); // Refetch exercises list to reflect the changes
+        },
+        // Optionally handle errors as well
+        onError: (error) => {
+            console.error('Error deleting exercise:', error);
+        }
+    });
+
+    const handleDelete = () => {
+        // Call the mutate function with the exercise ID
+        if (id) {
+            deleteExercise.mutate(id);
+        }
+    };
 
     // Create a list of input elements for sets
     const setInputs = Array.from({ length: numSets }, (_, index) => (
@@ -159,6 +188,18 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
                                 )}
                                 Save Exercise
                             </Button>
+                            <div className="mr-2"></div>
+                            {/* Place the Delete button only if an exercise ID is present */}
+                            {id && (
+                                <Button type="button" className="bg-red-500 hover:bg-red-700" onClick={handleDelete} disabled={deleteExercise.isPending}>
+                                    {deleteExercise.isPending ? (
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                    ) : (
+                                        "Delete Exercise"
+                                    )}
+                                </Button>
+                            )}
+
                         </div>
                     </form>
                 </div>

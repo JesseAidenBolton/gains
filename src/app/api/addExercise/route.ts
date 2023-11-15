@@ -18,8 +18,6 @@ export async function POST(req: Request) {
 
         if (id) {
 
-
-
             // Updating an existing exercise
             const exerciseToUpdate = {
                 name: name,
