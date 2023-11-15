@@ -17,9 +17,11 @@ export async function POST(req: Request) {
         const { sets, name, id } = body;
 
         if (id) {
+
+
+
             // Updating an existing exercise
             const exerciseToUpdate = {
-                date: new Date(),
                 name: name,
                 userId: userId,
                 exercises: [{ sets: sets }],
