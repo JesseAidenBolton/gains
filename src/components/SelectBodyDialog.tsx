@@ -25,9 +25,9 @@ const SelectBodyDialog: React.FC<SelectBodyDialogProps> = ({ isOpen, onOpenChang
         <div>
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogTrigger>
-                <div className="border-dashed border-2 flex border-amber-600 h-full rounded-lg items-center justify-center sm:flex-col hover:shadow-xl transition hover:-translate-y-1 flex-row p-4">
-                    <Plus className="w-6 h-6 text-amber-600" strokeWidth={3} />
-                    <h2 className="font-semibold text-amber-600 sm:mt-2">
+                <div className="border-dashed border-2 flex border-primary h-full rounded-lg items-center justify-center sm:flex-col hover:shadow-xl transition hover:-translate-y-1 flex-row p-4">
+                    <Plus className="w-6 h-6 text-primary" strokeWidth={3} />
+                    <h2 className="font-semibold text-primary sm:mt-2">
                         Add New Exercise
                     </h2>
                 </div>

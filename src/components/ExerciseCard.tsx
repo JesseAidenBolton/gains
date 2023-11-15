@@ -33,39 +33,35 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, refetchExercises}
     }
 
     return (
-        <div className="bg-white p-4 rounded-lg shadow-md mb-4 grid grid-cols-12 gap-4">
-            {/* Exercise Name */}
-            <div className="col-span-8">
-                <h2 className="text-xl font-semibold mb-2">{exercise.name}</h2>
-            </div>
 
-            {/* Pencil Button */}
-            <div className="col-span-4 flex items-center justify-end">
-                <Button variant="ghost" onClick={openEditDialog}>
-                    <Pencil />
+        <div className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition-shadow mb-4">
+            <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-800">{exercise.name}</h2>
+                <Button variant="ghost" onClick={openEditDialog} className="text-primary hover:text-primary-dark">
+                    <Pencil className="w-5 h-5" />
                 </Button>
             </div>
 
-            {/* Sets Section */}
-            <div className="col-span-12 mb-2">
-                <p className="text-gray-600">Sets:</p>
+            <div className="mt-3 text-gray-600">
+                <p className="uppercase font-semibold text-sm text-gray-500">Sets:</p>
                 <ul>
                     {exercisesArray.map((exercise, index) => (
-                        <li key={index}>
-                            <strong>{exercise.name}</strong>
-                            <ul>
+                        <li key={index} className="mt-1">
+                            <span className="font-semibold">{exercise.name}</span>
+                            <div className="flex flex-wrap gap-2 mt-1">
                                 {exercise.sets.map((set, setIndex) => (
-                                    <li key={setIndex}>
-                                        {setIndex + 1}: Weight: {set.weight} kgs, Reps: {set.reps}
-                                    </li>
+                                    <span key={setIndex} className="bg-gray-200 rounded-full px-3 py-1 text-sm">
+                                        {setIndex + 1}: {set.weight} kgs, {set.reps} reps
+                                    </span>
                                 ))}
-                            </ul>
+                            </div>
                         </li>
                     ))}
                 </ul>
             </div>
 
             {/* AddExerciseDialog for Editing */}
+            <div>
             {isEditDialogOpen && (
                 <AddExerciseDialog
                     isOpen={isEditDialogOpen}
@@ -76,6 +72,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, refetchExercises}
                     refetchExercises={refetchExercises}
                 />
             )}
+            </div>
         </div>
     );
 };

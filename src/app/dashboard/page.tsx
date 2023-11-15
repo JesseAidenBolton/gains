@@ -55,7 +55,7 @@ const DashboardPage = (props: Props) => {
 
     //const [isLoading, setIsLoading] = useState(true);
 
-    console.log(`selectedDate ${selectedDate}`);
+    //console.log(`selectedDate ${selectedDate}`);
 
     const { data: exercises, isLoading, isError, refetch } = useQuery({
         queryKey: ['exercises', userId, selectedDate],
@@ -81,6 +81,8 @@ const DashboardPage = (props: Props) => {
 
     const today = getDate()
 
+    const formattedDate = selectedDate ? format(selectedDate, 'EEE MMM dd yyyy') : 'No date selected';
+
     const [selectedExercise, setSelectedExercise] = useState("");
 
     const [isBodyDialogOpen, setIsBodyDialogOpen] = useState(false);
@@ -101,6 +103,7 @@ const DashboardPage = (props: Props) => {
         setIsAddExerciseDialogOpen(true)
     };
 
+    console.log(selectedDate?.getDay())
 
     return (
         <>
@@ -110,15 +113,16 @@ const DashboardPage = (props: Props) => {
                 <div className="flex justify-between items-center md:flex-row flex-col">
                     <div className="flex items-center">
                         <Link href='/'>
-                            <Button className="bg-amber-500" size="sm">
+                            <Button className="bg-primary" size="sm">
                                 <ArrowBigLeft className="mr-1 w-4 h-4" />
                                 Back
                             </Button>
                         </Link>
                         <div className="w-4"></div>
-                        <h1 className="text-3xl font-bold text-gray-900">{today}</h1>
+                        <h1 className="text-3xl font-bold text-gray-900">{formattedDate}</h1>
                         <div className="w-4"></div>
                         <UserButton />
+                        <div className="w-4"></div>
                         <CalendarComponent selectedDate={selectedDate} onDateChange={(newDate) => setSelectedDate(newDate)} />
                     </div>
                 </div>

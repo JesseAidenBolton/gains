@@ -6,6 +6,7 @@ import {Label} from "@/components/ui/label";
 import {Loader2, Minus, Plus} from "lucide-react";
 import {useMutation} from "@tanstack/react-query";
 import axios from "axios";
+import {Dialog, DialogContent, DialogTrigger} from "@/components/ui/dialog";
 
 
 
@@ -128,42 +129,41 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
                 onChange={(e) => handleInputChange(index, 'reps', e.target.value)}
 
             />
+            <div className="mt-0.5"></div>
         </div>
     ));
 
 
     return (
 
-        <Popover open={isOpen} onOpenChange={onOpenChange}>
-            <PopoverTrigger>
-            </PopoverTrigger>
-            <PopoverContent className="fixed flex justify-center items-center w-96">
-                    <div className="rounded-lg shadow-lg grid gap-4 p-4">
-                        <h4 className="font-medium leading-none">Sets for {exercise}</h4>
-                        <div className="flex justify-between items-center">
-                            <Button onClick={decrease} disabled={numSets <= 1} className="bg-amber-500 w-10 h-10 m-2">
-                                <Minus className="w-4 h-4" strokeWidth={3} />
-                            </Button>
-                            <Label>{numSets}</Label>
-                            <Button onClick={increase} disabled={numSets >= 10} className="bg-amber-500 w-10 h-10 m-2">
-                                <Plus className="w-4 h-4" strokeWidth={3} />
-                            </Button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent>
+                <div className="rounded-lg shadow-lg grid gap-4 p-4">
+                    <h4 className="font-medium leading-none">Sets for {exercise}</h4>
+                    <div className="flex justify-between items-center">
+                        <Button onClick={decrease} disabled={numSets <= 1} className="bg-primary w-10 h-10 m-2">
+                            <Minus className="w-4 h-4" strokeWidth={3} />
+                        </Button>
+                        <Label>{numSets}</Label>
+                        <Button onClick={increase} disabled={numSets >= 10} className="bg-primary w-10 h-10 m-2">
+                            <Plus className="w-4 h-4" strokeWidth={3} />
+                        </Button>
+                    </div>
+                    <form onSubmit={handleSubmit}>
                         {setInputs}
                         <div className="m-4"></div>
                         <div className="flex items-center">
-                            <Button type="submit" className="bg-amber-500" disabled={addExercise.isPending}>
+                            <Button type="submit" className="bg-primary" disabled={addExercise.isPending}>
                                 {addExercise.isPending && (
                                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                                 )}
                                 Save Exercise
                             </Button>
                         </div>
-                        </form>
-                    </div>
-            </PopoverContent>
-        </Popover>
+                    </form>
+                </div>
+            </DialogContent>
+        </Dialog>
 
     );
 };
