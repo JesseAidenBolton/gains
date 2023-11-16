@@ -53,8 +53,8 @@ const DashboardPage = (props: Props) => {
         queryFn: async () => {
             if (!userId || !selectedDate) return [];
 
-            const formattedStartOfDay = format(startOfDay(selectedDate), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS');
-            const formattedEndOfDay = format(endOfDay(selectedDate), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS');
+            const formattedStartOfDay = format(startOfDay(selectedDate), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'');
+            const formattedEndOfDay = format(endOfDay(selectedDate), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'');
 
             const response = await axios.get<Exercise[]>(`/api/getExercise`, {
                 params: {
