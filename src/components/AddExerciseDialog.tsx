@@ -17,6 +17,7 @@ interface AddExerciseDialogProps {
     lastSets?: Set[]
     id?: number;
     refetchExercises: () => void;
+    selectedDate: Date | undefined;
     //onExerciseSelected: (exercise: Exercise) => void;
     // getExercises: (bodyPart: string) => Exercise[];
 }
@@ -38,7 +39,7 @@ interface Exercise {
 
 
 
-const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenChange, exercise, lastSets, id,refetchExercises}) => {
+const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenChange, exercise, lastSets, id,refetchExercises, selectedDate}) => {
 
     const [numSets, setNumSets] = useState<number>(0);
     const [sets, setSets] = useState<Set[]>([]);
@@ -48,7 +49,8 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
             const response = await axios.post('/api/addExercise', {
                 name: exercise,
                 sets: sets,
-                id: id
+                id: id,
+                date: selectedDate
             })
             return response.data
         }

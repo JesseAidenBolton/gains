@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { $workouts } from "@/lib/db/schema";
-import {eq} from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 export async function POST(req: Request) {
     const { userId } = auth();
@@ -14,16 +14,14 @@ export async function POST(req: Request) {
 
     try {
         const body = await req.json();
-        const { sets, name, id } = body;
+        const { sets, name, id, date } = body; // Add 'date' to the destructured fields
 
         if (id) {
-
             // Updating an existing exercise
             const exerciseToUpdate = {
                 name: name,
                 userId: userId,
                 exercises: [{ sets: sets }],
-                // Include id only for the update
                 id: id
             };
 
@@ -37,12 +35,13 @@ export async function POST(req: Request) {
             }
         } else {
             // Inserting a new exercise
+            const exerciseDate = date ? new Date(date) : new Date(); // Use the provided date or default to the current date
+            console.log(exerciseDate)
             const newExercise = {
-                date: new Date(),
+                date: exerciseDate,
                 name: name,
                 userId: userId,
                 exercises: [{ sets: sets }]
-                // Exclude the id field here
             };
 
             await db.insert($workouts).values(newExercise).execute();

@@ -4,7 +4,6 @@ require('dotenv').config();
 
 neonConfig.fetchConnectionCache = true
 
-console.log(process.env.DATABASE_URL)
 
 
 //const database = process.env.DATABASE_URL
