@@ -48,7 +48,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, refetchExercises,
                 const url = `/api/getPreviousExercise/${exercise.id}`;
                 console.log("Requesting URL:", url);
                 const response = await axios.get(`/api/getPreviousExercise/${exercise.id}`);
-                console.log(`data recieved: ${JSON.stringify(response.data[0].sets, null, 2)}`)
+                //console.log(`data recieved: ${JSON.stringify(response.data[0].sets, null, 2)}`)
                 setPreviousSets(response.data[0].sets);
             } catch (error) {
                 console.error("Error fetching previous sets:", error);

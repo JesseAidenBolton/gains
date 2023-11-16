@@ -17,7 +17,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import CalendarComponent from "@/components/CalendarComponent";
 import {endOfDay, format, startOfDay} from "date-fns";
 
-type Props = {};
+type Props = {}
+
+export const runtime = "edge";
 
 interface Set {
     weight: string;
