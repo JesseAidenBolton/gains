@@ -16,8 +16,10 @@ import ExerciseCard from "@/components/ExerciseCard";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import CalendarComponent from "@/components/CalendarComponent";
 import {endOfDay, format, startOfDay} from "date-fns";
+import axios from "axios";
 
 type Props = {}
+
 
 export const runtime = "edge";
 
@@ -46,24 +48,22 @@ const DashboardPage = (props: Props) => {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
 
-    const { data: exercises, isLoading, isError, refetch } = useQuery({
+    const { data: exercises, isLoading, isError, refetch } = useQuery<Exercise[]>({
         queryKey: ['exercises', userId, selectedDate],
         queryFn: async () => {
             if (!userId || !selectedDate) return [];
 
-            const formattedStartOfDay  = format(startOfDay(selectedDate), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS');
-            const formattedEndOfDay  = format(endOfDay(selectedDate), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS');
+            const formattedStartOfDay = format(startOfDay(selectedDate), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS');
+            const formattedEndOfDay = format(endOfDay(selectedDate), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS');
 
-            const formattedDate = format(selectedDate, 'yyyy-MM-dd');
-            const dateObjectStart = new Date(formattedStartOfDay);
-            const dateObjectEnd = new Date(formattedEndOfDay);
-
-            const fetchedExercises = await db.select().from($workouts)
-                .where(and(
-                    eq($workouts.userId, userId),
-                    gte($workouts.date, dateObjectStart),
-                    lte($workouts.date, dateObjectEnd)));
-            return fetchedExercises;
+            const response = await axios.get<Exercise[]>(`/api/getExercise`, {
+                params: {
+                    userId: userId,
+                    startDate: formattedStartOfDay,
+                    endDate: formattedEndOfDay
+                }
+            });
+            return response.data;
         },
         enabled: !!userId && !!selectedDate // Fetch only when userId is available
     });
@@ -90,7 +90,6 @@ const DashboardPage = (props: Props) => {
         setIsExerciseDialogOpen(false)
         setIsAddExerciseDialogOpen(true)
     };
-
 
 
     return (
