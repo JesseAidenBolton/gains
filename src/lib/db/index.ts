@@ -3,10 +3,6 @@ import {drizzle} from "drizzle-orm/neon-http";
 
 neonConfig.fetchConnectionCache = true
 
-
-
-//const database = process.env.DATABASE_URL
-
 if(!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL is not defined');
 }
