@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         } else {
             // Inserting a new exercise
             const exerciseDate = date ? new Date(date) : new Date(); // Use the provided date or default to the current date
-            console.log(exerciseDate)
+            //console.log(exerciseDate)
             const newExercise = {
                 date: exerciseDate,
                 name: name,

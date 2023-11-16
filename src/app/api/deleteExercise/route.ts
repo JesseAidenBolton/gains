@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
 
     const { exerciseId } = await req.json();
-    console.log(`DELETE ${exerciseId}`)
+    //console.log(`DELETE ${exerciseId}`)
     await db.delete($workouts).where(eq($workouts.id, parseInt(exerciseId)));
     return new NextResponse("ok", { status: 200 });
 }

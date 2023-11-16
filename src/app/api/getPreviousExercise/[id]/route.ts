@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 
     const id = request.url.slice(request.url.lastIndexOf('/') + 1);
 
-    console.log(`id is ${id}`);
+    //console.log(`id is ${id}`);
 
     try {
 
@@ -38,7 +38,7 @@ export async function GET(request: Request) {
 
         const { userId, date: currentDate } = currentExercise[0];
 
-        console.log(`current: ${JSON.stringify(currentExercise, null, 2)}`)
+        //console.log(`current: ${JSON.stringify(currentExercise, null, 2)}`)
 
         // Fetch the most recent exercise for the same user before the current exercise's date
         const previousExercise = await db
@@ -60,7 +60,7 @@ export async function GET(request: Request) {
         }
 
         // Return the previous exercise data
-        console.log(`previous: ${JSON.stringify(previousExercise[0], null, 2)}`)
+        //console.log(`previous: ${JSON.stringify(previousExercise[0], null, 2)}`)
         return Response.json(previousExercise[0].exercises)
         //return new NextResponse("ok", { status: 200 });
         //return res.status(200).json(previousExercise[0]);

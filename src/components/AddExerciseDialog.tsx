@@ -61,7 +61,7 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
 
         addExercise.mutate(undefined, {
             onSuccess: () => {
-                console.log('exercise added')
+                //console.log('exercise added')
                 onOpenChange()
                 refetchExercises();
             },
@@ -117,7 +117,7 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
         },
         onSuccess: () => {
             // Handle successful deletion
-            console.log('Exercise deleted');
+            //console.log('Exercise deleted');
             onOpenChange(); // Close the dialog
             refetchExercises(); // Refetch exercises list to reflect the changes
         },
