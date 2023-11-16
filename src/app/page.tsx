@@ -4,7 +4,11 @@ import Link from "next/link";
 import {ArrowBigRight, ArrowRight} from "lucide-react";
 
 
+
+
+
 export default function Home() {
+
     return (
         <div className="bg-gradient-to-r min-h-screen from-pink-500 via-red-500 to-yellow-500">
             <div className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
