@@ -37,8 +37,6 @@ interface Exercise {
 
 
 
-
-
 const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenChange, exercise, lastSets, id,refetchExercises, selectedDate}) => {
 
     const [numSets, setNumSets] = useState<number>(0);
