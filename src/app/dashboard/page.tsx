@@ -3,7 +3,7 @@
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import {ArrowBigLeft} from "lucide-react";
-import {auth, useClerk, UserButton} from "@clerk/nextjs";
+import {useClerk, UserButton} from "@clerk/nextjs";
 import {Separator} from "@/components/ui/separator";
 import SelectBodyDialog from "@/components/SelectBodyDialog";
 import {useState} from "react";
@@ -35,14 +35,6 @@ interface Exercise {
     exercises: unknown
 }
 
-const getDate = () => {
-    const today = new Date();
-    const month = today.getMonth() + 1;
-    const year = today.getFullYear();
-    const date = today.getDate();
-    return `${date}/${month}/${year}`;
-}
-
 
 
 const DashboardPage = (props: Props) => {
@@ -53,11 +45,6 @@ const DashboardPage = (props: Props) => {
 
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
-    //const [exercises, setExercises] = useState<Exercise[]>([]);
-
-    //const [isLoading, setIsLoading] = useState(true);
-
-    //console.log(`selectedDate ${selectedDate}`);
 
     const { data: exercises, isLoading, isError, refetch } = useQuery({
         queryKey: ['exercises', userId, selectedDate],
@@ -81,7 +68,6 @@ const DashboardPage = (props: Props) => {
         enabled: !!userId && !!selectedDate // Fetch only when userId is available
     });
 
-    const today = getDate()
 
     const formattedDate = selectedDate ? format(selectedDate, 'EEE MMM dd yyyy') : 'No date selected';
 
