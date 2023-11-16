@@ -6,9 +6,6 @@ const nextConfig = {
     eslint: {
         ignoreDuringBuilds: true
     },
-    env: {
-        DATABASE_URL: process.env.DATABASE_URL
-    }
 }
 
 module.exports = nextConfig
