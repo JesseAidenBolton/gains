@@ -62,8 +62,8 @@ const DashboardPage = (props: Props) => {
         queryFn: async () => {
             if (!userId || !selectedDate) return [];
 
-            const formattedStartOfDay  = format(startOfDay(selectedDate), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'');
-            const formattedEndOfDay  = format(endOfDay(selectedDate), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'');
+            const formattedStartOfDay  = format(startOfDay(selectedDate), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS');
+            const formattedEndOfDay  = format(endOfDay(selectedDate), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS');
 
             const formattedDate = format(selectedDate, 'yyyy-MM-dd');
             const dateObjectStart = new Date(formattedStartOfDay);
@@ -103,7 +103,7 @@ const DashboardPage = (props: Props) => {
         setIsAddExerciseDialogOpen(true)
     };
 
-    console.log(selectedDate?.getDay())
+
 
     return (
         <>
@@ -150,7 +150,7 @@ const DashboardPage = (props: Props) => {
                     <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {exercises.map(exercise => (
                             <div key={exercise.id} className="border border-stone-300 rounded-lg overflow-hidden flex flex-col hover:shadow-xl transition hover:-translate-y-1">
-                                <ExerciseCard exercise={exercise} refetchExercises={refetch} />
+                                <ExerciseCard exercise={exercise} refetchExercises={refetch} date={selectedDate} />
                             </div>
                         ))}
                     </div>
@@ -172,6 +172,7 @@ const DashboardPage = (props: Props) => {
                         onOpenChange={() => setIsAddExerciseDialogOpen(prev => !prev)}
                         exercise={selectedExercise}
                         refetchExercises={refetch}
+                        selectedDate={selectedDate}
 
                     /></div>)
                     }

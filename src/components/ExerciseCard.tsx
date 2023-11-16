@@ -1,8 +1,9 @@
 // Define TypeScript types for props
-import {Pencil} from "lucide-react";
+import {Pencil, Repeat} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {useState} from "react";
 import AddExerciseDialog from "@/components/AddExerciseDialog";
+import axios from "axios";
 
 interface Set {
     weight: string;
@@ -21,25 +22,55 @@ interface Exercise {
 interface ExerciseCardProps {
     exercise: Exercise;
     refetchExercises: () => void;
+    date: Date | undefined;
 }
 
-const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, refetchExercises}) => {
+const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, refetchExercises, date}) => {
     const exercisesArray = exercise.exercises as { name: string; sets: Set[] }[]; // Type assertion
 
+    const [isToggleOn, setIsToggleOn] = useState(false);
+
+    const [previousSets, setPreviousSets] = useState<Set[]>([]);
+
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
+    const [isLoadingPrevious, setIsLoadingPrevious] = useState(false);
 
     const openEditDialog = () => {
         setIsEditDialogOpen(true)
     }
+
+    const togglePreviousSets = async () => {
+        setIsToggleOn(!isToggleOn);
+        if (!isToggleOn && exercise.id) {
+            setIsLoadingPrevious(true);
+            try {
+                const url = `/api/getPreviousExercise/${exercise.id}`;
+                console.log("Requesting URL:", url);
+                const response = await axios.get(`/api/getPreviousExercise/${exercise.id}`);
+                console.log(`data recieved: ${JSON.stringify(response.data[0].sets, null, 2)}`)
+                setPreviousSets(response.data[0].sets);
+            } catch (error) {
+                console.error("Error fetching previous sets:", error);
+            } finally {
+                setIsLoadingPrevious(false);
+            }
+        }
+    };
 
     return (
 
         <div className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition-shadow mb-4">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-800">{exercise.name}</h2>
-                <Button variant="ghost" onClick={openEditDialog} className="text-primary hover:text-primary-dark">
-                    <Pencil className="w-5 h-5" />
-                </Button>
+                <div>
+                    <Button variant="ghost" onClick={openEditDialog} className="text-primary hover:text-primary-dark">
+                        <Pencil className="w-5 h-5" />
+                    </Button>
+                    <Button variant="ghost" onClick={togglePreviousSets} aria-label="Toggle previous sets" disabled={isLoadingPrevious}>
+                        <Repeat className="w-5 h-5" />
+                    </Button>
+                </div>
             </div>
 
             <div className="mt-3 text-gray-600">
@@ -49,8 +80,8 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, refetchExercises}
                         <li key={index} className="mt-1">
                             <span className="font-semibold">{exercise.name}</span>
                             <div className="flex flex-wrap gap-2 mt-1">
-                                {exercise.sets.map((set, setIndex) => (
-                                    <span key={setIndex} className="bg-gray-200 rounded-full px-3 py-1 text-sm">
+                                {(isToggleOn ? previousSets : exercise.sets).map((set, setIndex) => (
+                                    <span key={setIndex} className={`rounded-full px-3 py-1 text-sm ${isToggleOn ? 'bg-red-200' : 'bg-gray-200'}`}>
                                         {setIndex + 1}: {set.weight} kgs, {set.reps} reps
                                     </span>
                                 ))}
@@ -70,6 +101,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, refetchExercises}
                     lastSets={exercisesArray[0].sets.map((set => set))}
                     id={exercise.id}
                     refetchExercises={refetchExercises}
+                    selectedDate={date}
                 />
             )}
             </div>
