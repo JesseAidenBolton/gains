@@ -17,6 +17,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import CalendarComponent from "@/components/CalendarComponent";
 import {endOfDay, format, startOfDay} from "date-fns";
 import axios from "axios";
+import { utcToZonedTime } from 'date-fns-tz';
 
 type Props = {}
 
@@ -47,25 +48,34 @@ const DashboardPage = (props: Props) => {
 
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     const { data: exercises, isLoading, isError, refetch } = useQuery<Exercise[]>({
         queryKey: ['exercises', userId, selectedDate],
         queryFn: async () => {
             if (!userId || !selectedDate) return [];
 
-            const formattedStartOfDay = format(startOfDay(selectedDate), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'');
-            const formattedEndOfDay = format(endOfDay(selectedDate), 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'');
+            if (selectedDate instanceof Date) {
+                const zonedStartDate = utcToZonedTime(startOfDay(selectedDate), userTimeZone);
+                const zonedEndDate = utcToZonedTime(endOfDay(selectedDate), userTimeZone);
 
-            const response = await axios.get<Exercise[]>(`/api/getExercise`, {
-                params: {
-                    userId: userId,
-                    startDate: formattedStartOfDay,
-                    endDate: formattedEndOfDay
-                }
-            });
-            return response.data;
+                const formattedStartOfDay = format(zonedStartDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS');
+                const formattedEndOfDay = format(zonedEndDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS');
+
+                const response = await axios.get<Exercise[]>(`/api/getExercise`, {
+                    params: {
+                        userId: userId,
+                        startDate: formattedStartOfDay,
+                        endDate: formattedEndOfDay
+                    }
+                });
+                return response.data;
+            } else {
+                // Handle the case when selectedDate is undefined
+                return [];
+            }
         },
-        enabled: !!userId && !!selectedDate // Fetch only when userId is available
+        enabled: !!userId && !!selectedDate
     });
 
 
