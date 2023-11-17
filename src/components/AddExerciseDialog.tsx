@@ -166,45 +166,37 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
     return (
 
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent>
-                <div className="rounded-lg shadow-lg grid gap-4 p-4">
-                    <h4 className="font-medium leading-none">Sets for {exercise}</h4>
-                    <div className="flex justify-between items-center">
-                        <Button onClick={decrease} disabled={numSets <= 1} className="bg-primary w-10 h-10 m-2">
-                            <Minus className="w-4 h-4" strokeWidth={3} />
+            <DialogContent className="max-w-lg mx-auto p-6 overflow-y-auto h-full md:h-auto">
+                <div className="space-y-4">
+                    <h4 className="text-2xl font-semibold mb-4">Sets for {exercise}</h4>
+
+                    <div className="flex items-center justify-between mb-3">
+                        <Button onClick={decrease} disabled={numSets <= 1} className="text-white bg-primary hover:bg-primary-dark rounded-full p-2">
+                            <Minus className="w-5 h-5" />
                         </Button>
-                        <Label>{numSets}</Label>
-                        <Button onClick={increase} disabled={numSets >= 10} className="bg-primary w-10 h-10 m-2">
-                            <Plus className="w-4 h-4" strokeWidth={3} />
+                        <Label className="text-lg">{numSets} {numSets === 1 ? 'Set' : 'Sets'}</Label>
+                        <Button onClick={increase} disabled={numSets >= 10} className="text-white bg-primary hover:bg-primary-dark rounded-full p-2">
+                            <Plus className="w-5 h-5" />
                         </Button>
                     </div>
-                    <form onSubmit={handleSubmit}>
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
                         {setInputs}
-                        <div className="m-4"></div>
-                        <div className="flex items-center">
-                            <Button type="submit" className="bg-primary" disabled={addExercise.isPending}>
-                                {addExercise.isPending && (
-                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                )}
-                                Save Exercise
+                        <div className="flex justify-end space-x-3 mt-4">
+                            <Button type="submit" className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
+                                {addExercise.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Save Exercise'}
                             </Button>
-                            <div className="mr-2"></div>
-                            {/* Place the Delete button only if an exercise ID is present */}
                             {id && (
-                                <Button type="button" className="bg-red-500 hover:bg-red-700" onClick={handleDelete} disabled={deleteExercise.isPending}>
-                                    {deleteExercise.isPending ? (
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                    ) : (
-                                        "Delete Exercise"
-                                    )}
+                                <Button onClick={handleDelete} disabled={deleteExercise.isPending} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">
+                                    {deleteExercise.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Delete Exercise'}
                                 </Button>
                             )}
-
                         </div>
                     </form>
                 </div>
             </DialogContent>
         </Dialog>
+
 
     );
 };
