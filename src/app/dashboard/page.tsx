@@ -56,8 +56,11 @@ const DashboardPage = (props: Props) => {
             if (!userId || !selectedDate) return [];
 
             if (selectedDate) {
-                const zonedStartDate = utcToZonedTime(startOfDay(selectedDate), userTimeZone);
-                const zonedEndDate = utcToZonedTime(endOfDay(selectedDate), userTimeZone);
+                //const zonedStartDate = utcToZonedTime(startOfDay(selectedDate), userTimeZone);
+                //const zonedEndDate = utcToZonedTime(endOfDay(selectedDate), userTimeZone);
+
+                const zonedStartDate = startOfDay(selectedDate)
+                const zonedEndDate = endOfDay(selectedDate)
 
                 const formattedStartOfDay = format(zonedStartDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS');
                 const formattedEndOfDay = format(zonedEndDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS');
