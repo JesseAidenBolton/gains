@@ -1,9 +1,8 @@
-// pages/api/getPreviousExercise/[id].js
+// pages/api/getPreviousExercise/[name].js
 
 import { db } from "@/lib/db";
 import { $workouts } from "@/lib/db/schema";
 import {and, desc, eq, lt} from "drizzle-orm";
-import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
 
 

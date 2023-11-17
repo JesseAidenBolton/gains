@@ -10,7 +10,6 @@ export async function GET(request: NextRequest) {
     const startDate = searchParams.get("startDate");
     const endDate = searchParams.get("endDate");
 
-    console.log(`userId ${userId}`);
 
     if (!userId || !startDate || !endDate) {
         return new NextResponse(JSON.stringify({ message: "Missing query parameters" }), {
