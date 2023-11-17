@@ -9,9 +9,6 @@ import SelectBodyDialog from "@/components/SelectBodyDialog";
 import {useState} from "react";
 import SelectExerciseDialog from "@/components/SelectExerciseDialog";
 import AddExerciseDialog from "@/components/AddExerciseDialog";
-import {db} from "@/lib/db";
-import {and, eq, gte, lte} from "drizzle-orm";
-import {$workouts} from "@/lib/db/schema";
 import ExerciseCard from "@/components/ExerciseCard";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import CalendarComponent from "@/components/CalendarComponent";
@@ -110,31 +107,29 @@ const DashboardPage = (props: Props) => {
 
     return (
         <>
-        <div className="min-h-screen">
-            <div className="max-w-7xl mx-auto p-10">
-                <div className="h-14"></div>
-                <div className="flex justify-between items-center md:flex-row flex-col">
-                    {/* Left-aligned items */}
-                    <div className="flex items-center space-x-4">
-                        <Link href='/'>
-                            <Button className="bg-primary" size="sm">
-                                <ArrowBigLeft className="mr-1 w-4 h-4" />
-                                Back
-                            </Button>
-                        </Link>
-                        <CalendarComponent selectedDate={selectedDate} onDateChange={(newDate) => setSelectedDate(newDate)} />
-                        <h1 className="text-3xl font-bold text-gray-900">{formattedDate}</h1>
-                    </div>
+            <div className="min-h-screen bg-gray-100">
+                <div className="max-w-7xl mx-auto px-6 sm:px-10 py-8">
+                    <div className="bg-white rounded-lg shadow px-5 py-4 sm:p-6 lg:p-8">
+                        <div className="flex items-center justify-between flex-wrap sm:flex-nowrap">
+                            {/* Left-aligned items */}
+                            <div className="flex items-center space-x-4">
+                                <Link href='/'>
+                                    <Button className="bg-primary hover:bg-primary-dark text-white" size="sm">
+                                        <ArrowBigLeft className="mr-1 w-4 h-4" />
+                                        Back
+                                    </Button>
+                                </Link>
+                                <CalendarComponent selectedDate={selectedDate} onDateChange={(newDate) => setSelectedDate(newDate)} />
+                                <h1 className="text-xl sm:text-2xl font-bold text-gray-700">{formattedDate}</h1>
+                            </div>
 
-                    {/* Right-aligned items */}
-                    <div>
-                        <UserButton />
+                            {/* Right-aligned items */}
+                            <div className="mt-4 sm:mt-0">
+                                <UserButton />
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <div className="h-8"></div>
-                <Separator />
-                <div className="h-8"></div>
+                    <Separator className="my-6" />
 
                 {/*add exercise*/}
                 <div className="grid sm:grid-cols-3 md:grid-cols-1 grid-cols-1 gap-2">
@@ -154,6 +149,9 @@ const DashboardPage = (props: Props) => {
                         {exercises.map(exercise => (
                             <div key={exercise.id} className="border border-stone-300 rounded-lg overflow-hidden flex flex-col hover:shadow-xl transition hover:-translate-y-1">
                                 <ExerciseCard exercise={exercise} refetchExercises={refetch} date={selectedDate} />
+                                <Link href={`/history/${exercise.name}?name=${exercise.name}`}>
+                                    <div className="text-blue-500 hover:text-blue-600">View History</div>
+                                </Link>
                             </div>
                         ))}
                     </div>
