@@ -55,7 +55,7 @@ const DashboardPage = (props: Props) => {
         queryFn: async () => {
             if (!userId || !selectedDate) return [];
 
-            if (selectedDate instanceof Date) {
+            if (selectedDate) {
                 const zonedStartDate = utcToZonedTime(startOfDay(selectedDate), userTimeZone);
                 const zonedEndDate = utcToZonedTime(endOfDay(selectedDate), userTimeZone);
 
