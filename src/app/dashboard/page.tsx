@@ -65,8 +65,8 @@ const DashboardPage = (props: Props) => {
                 const utcStartDate = utcToZonedTime(zonedStartDate, 'UTC');
                 const utcEndDate = utcToZonedTime(zonedEndDate, 'UTC');
 
-                const formattedStartOfDay = format(utcStartDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'X\'');
-                const formattedEndOfDay = format(utcEndDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'X\'');
+                const formattedStartOfDay = format(utcStartDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS');
+                const formattedEndOfDay = format(utcEndDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS');
 
                 const response = await axios.get<Exercise[]>(`/api/getExercise`, {
                     params: {
