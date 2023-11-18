@@ -1,9 +1,10 @@
 // Define TypeScript types for props
-import {Pencil, Repeat} from "lucide-react";
+import {Pencil, Repeat, History} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {useState} from "react";
 import AddExerciseDialog from "@/components/AddExerciseDialog";
 import axios from "axios";
+import Link from "next/link";
 
 interface Set {
     weight: string;
@@ -70,6 +71,12 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, refetchExercises,
                     <Button variant="ghost" onClick={togglePreviousSets} aria-label="Toggle previous sets" disabled={isLoadingPrevious}>
                         <Repeat className="w-5 h-5" />
                     </Button>
+                    <Link href={`/history/${encodeURIComponent(exercise.name)}?name=${encodeURIComponent(exercise.name)}`}>
+                        <Button className="flex items-center bg-gray-100 hover:bg-gray-200 text-gray-600">
+                            <History className="w-4 h-4 mr-1" />
+                            View History
+                        </Button>
+                    </Link>
                 </div>
             </div>
 
@@ -105,6 +112,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, refetchExercises,
                 />
             )}
             </div>
+
         </div>
     );
 };
