@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ArrowBigRight} from "lucide-react";
+import ProgressChart from "@/components/ProgressChart";
 
 interface Set {
     weight: string;
@@ -26,14 +27,33 @@ interface ExerciseHistoryProps {
     name: string;
 }
 
-const ExerciseHistory: React.FC<ExerciseHistoryProps> = ({ name }) => {
+const ExerciseHistory: React.FC<ExerciseHistoryProps> = ({ name}) => {
     const [history, setHistory] = useState<HistoryEntry[]>([]);
+    const [graphData, setGraphData] = useState<{ labels: string[], data: number[] }>({ labels: [], data: [] });
 
     useEffect(() => {
         const fetchHistory = async () => {
             try {
                 const response = await axios.get<HistoryEntry[]>(`/api/getHistory/${name}`);
                 setHistory(response.data);
+
+                // Prepare data for the graph
+                const labels = response.data.map(entry =>
+                    new Date(entry.date).toLocaleDateString('en-GB')
+                );
+
+                const data = response.data.map(entry => {
+                    // Find the maximum weight lifted in each session
+                    return entry.exercises.reduce((maxWeight, exercise) => {
+                        const maxWeightInExercise = exercise.sets.reduce((max, set) => {
+                            const weight = parseFloat(set.weight) || 0;
+                            return Math.max(max, weight);
+                        }, 0);
+                        return Math.max(maxWeight, maxWeightInExercise);
+                    }, 0);
+                });
+
+                setGraphData({ labels, data });
             } catch (error) {
                 console.error('Error fetching exercise history', error);
             }
@@ -46,6 +66,7 @@ const ExerciseHistory: React.FC<ExerciseHistoryProps> = ({ name }) => {
 
     return (
         <div>
+            <ProgressChart labels={graphData.labels} data={graphData.data} />
             {history.length > 0 ? (
                 <ul className="space-y-4">
                     {history.map((entry) => (
