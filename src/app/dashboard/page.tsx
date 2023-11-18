@@ -108,23 +108,27 @@ const DashboardPage = (props: Props) => {
     return (
         <>
             <div className="min-h-screen bg-gray-100">
-                <div className="max-w-7xl mx-auto px-6 sm:px-10 py-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="bg-white rounded-lg shadow px-5 py-4 sm:p-6 lg:p-8">
-                        <div className="flex items-center justify-between flex-wrap sm:flex-nowrap">
+                        <div className="flex flex-col sm:flex-row justify-between items-center">
                             {/* Left-aligned items */}
-                            <div className="flex items-center space-x-4">
-                                <Link href='/'>
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-3 sm:mb-0">
+                                <Link href='/' passHref>
                                     <Button className="bg-primary hover:bg-primary-dark text-white" size="sm">
                                         <ArrowBigLeft className="mr-1 w-4 h-4" />
                                         Back
                                     </Button>
                                 </Link>
-                                <CalendarComponent selectedDate={selectedDate} onDateChange={(newDate) => setSelectedDate(newDate)} />
-                                <h1 className="text-xl sm:text-2xl font-bold text-gray-700">{formattedDate}</h1>
+                                <div className="flex-grow">
+                                    <CalendarComponent selectedDate={selectedDate} onDateChange={(newDate) => setSelectedDate(newDate)} />
+                                </div>
+                                <div className="flex-grow text-center sm:text-left">
+                                    <h1 className="text-xl sm:text-2xl font-bold text-gray-700 truncate">{formattedDate}</h1>
+                                </div>
                             </div>
 
                             {/* Right-aligned items */}
-                            <div className="mt-4 sm:mt-0">
+                            <div className="flex-grow-0">
                                 <UserButton />
                             </div>
                         </div>
@@ -149,9 +153,9 @@ const DashboardPage = (props: Props) => {
                         {exercises.map(exercise => (
                             <div key={exercise.id} className="border border-stone-300 rounded-lg overflow-hidden flex flex-col hover:shadow-xl transition hover:-translate-y-1">
                                 <ExerciseCard exercise={exercise} refetchExercises={refetch} date={selectedDate} />
-                                <Link href={`/history/${exercise.name}?name=${exercise.name}`}>
+                               {/* <Link href={`/history/${exercise.name}?name=${exercise.name}`}>
                                     <div className="text-blue-500 hover:text-blue-600">View History</div>
-                                </Link>
+                                </Link>*/}
                             </div>
                         ))}
                     </div>
