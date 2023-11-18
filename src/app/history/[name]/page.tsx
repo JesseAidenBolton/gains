@@ -6,10 +6,13 @@ import { Button } from "@/components/ui/button";
 import { ArrowBigLeft } from "lucide-react";
 import { useSearchParams } from 'next/navigation';
 import ExerciseHistory from '@/components/ExerciseHistory';
+import {useState} from "react";
 
 const ExerciseHistoryPage: React.FC = () => {
     const searchParams = useSearchParams();
     const exerciseName = searchParams.get('name');
+
+    const [graphData, setGraphData] = useState({ labels: [], data: [] });
 
     return (
         <div className="min-h-screen bg-gray-100 text-gray-800">
@@ -26,7 +29,7 @@ const ExerciseHistoryPage: React.FC = () => {
                     </h1>
                 </div>
                 <div className="bg-white rounded-lg shadow-md p-6 ring-1 ring-gray-200">
-                    {exerciseName && <ExerciseHistory name={exerciseName} />}
+                    {exerciseName && <ExerciseHistory name={exerciseName}/>}
                 </div>
             </div>
         </div>
