@@ -15,6 +15,7 @@ import CalendarComponent from "@/components/CalendarComponent";
 import {endOfDay, format, startOfDay} from "date-fns";
 import axios from "axios";
 import { utcToZonedTime } from 'date-fns-tz';
+import Footer from "@/components/Footer";
 
 type Props = {}
 
@@ -183,6 +184,7 @@ const DashboardPage = (props: Props) => {
                     }
                 </div>
             </div>
+                <Footer />
         </div>
 
         </>
