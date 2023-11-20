@@ -7,10 +7,13 @@ import { ArrowBigLeft } from "lucide-react";
 import { useSearchParams } from 'next/navigation';
 import ExerciseHistory from '@/components/ExerciseHistory';
 import {useState} from "react";
+import {useSelectedDate} from "@/contexts/SelectedDateContext";
 
 const ExerciseHistoryPage: React.FC = () => {
     const searchParams = useSearchParams();
     const exerciseName = searchParams.get('name');
+
+    const { setSelectedDate } = useSelectedDate()
 
     const [graphData, setGraphData] = useState({ labels: [], data: [] });
 

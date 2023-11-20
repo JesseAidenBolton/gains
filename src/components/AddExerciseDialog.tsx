@@ -207,7 +207,7 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
                         <form onSubmit={handleSubmit} className="space-y-4">
                             {setInputs}
                             <div className="flex justify-end space-x-3 mt-4">
-                                <Button type="submit" className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
+                                <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
                                     {addExercise.isPending ? (
                                         <Loader2 className="w-5 h-5 animate-spin" />
                                     ) : (
