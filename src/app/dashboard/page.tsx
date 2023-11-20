@@ -108,7 +108,7 @@ const DashboardPage = (props: Props) => {
     };
 
     const handleTimerEnd = () => {
-        alert('Time is up!'); // Replace with an audio alert or a custom notification
+        //alert('Time is up!'); // Replace with an audio alert or a custom notification
     };
 
 

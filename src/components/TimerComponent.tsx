@@ -9,6 +9,8 @@ const TimerComponent: React.FC<TimerComponentProps> = ({ onTimerEnd }) => {
     const [countdown, setCountdown] = useState(0);
     const [activeTimer, setActiveTimer] = useState<NodeJS.Timeout | null>(null);
     const [showButtons, setShowButtons] = useState(false);
+    const [showNotification, setShowNotification] = useState<boolean>(false);
+
 
     const startTimer = (duration: number) => {
         // Clear any existing timers
@@ -26,6 +28,7 @@ const TimerComponent: React.FC<TimerComponentProps> = ({ onTimerEnd }) => {
     useEffect(() => {
         if (countdown <= 0 && activeTimer) {
             clearInterval(activeTimer);
+            setShowNotification(true);
             onTimerEnd();
             setActiveTimer(null);
         }
@@ -35,6 +38,7 @@ const TimerComponent: React.FC<TimerComponentProps> = ({ onTimerEnd }) => {
         if (activeTimer) {
             clearInterval(activeTimer);
         }
+        setShowNotification(false);
         setCountdown(0);
         setActiveTimer(null);
     };
@@ -52,7 +56,7 @@ const TimerComponent: React.FC<TimerComponentProps> = ({ onTimerEnd }) => {
 
             {showButtons && (<div><div className="flex space-x-2">
                 <button
-                    onClick={() => startTimer(30000)}
+                    onClick={() => startTimer(1000)}
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 >
                     30s
@@ -82,7 +86,21 @@ const TimerComponent: React.FC<TimerComponentProps> = ({ onTimerEnd }) => {
                     </div>
                 </div>
                 )}
-
+            {showNotification && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 animate-pulse">
+                    <div className="bg-gray-800 p-8 md:p-12 rounded-xl shadow-2xl border border-gray-700">
+                        <h2 className="text-3xl text-white font-bold mb-6 text-center">Time's Up!</h2>
+                        <div className="flex justify-center">
+                            <button
+                                onClick={() => setShowNotification(false)}
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-lg transition duration-300 ease-in-out transform hover:scale-105"
+                            >
+                                OK
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
 
 
