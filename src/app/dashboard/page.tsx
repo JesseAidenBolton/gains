@@ -16,6 +16,7 @@ import {endOfDay, format, startOfDay} from "date-fns";
 import axios from "axios";
 import { utcToZonedTime } from 'date-fns-tz';
 import Footer from "@/components/Footer";
+import {useSelectedDate} from "@/contexts/SelectedDateContext";
 
 type Props = {}
 
@@ -44,7 +45,7 @@ const DashboardPage = (props: Props) => {
     const userId = user?.id; // Access the user's ID
     const queryClient = useQueryClient();
 
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+    const { selectedDate, setSelectedDate } = useSelectedDate();
 
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 

@@ -26,6 +26,8 @@ const exerciseList = [
             { id: 205, exercise: "Cable Curls" },
             { id: 206, exercise: "Machine Bicep Curls" },
             { id: 207, exercise: "Preacher Curls" },
+            { id: 208, exercise: "Incline Dumbell Bicep Curls"},
+            { id: 209, exercise: "Twist Curls"},
         ],
     },
     {
@@ -73,6 +75,7 @@ const exerciseList = [
             { id: 508, exercise: "Machine Shoulder Press" },
             { id: 509, exercise: "Bent-Over Reverse Flyes" },
             { id: 510, exercise: "Upright Rows" },
+            { id: 511, exercise: "Rear Delt Fly"},
         ],
     },
     {
@@ -120,6 +123,7 @@ const exerciseList = [
             { id: 720, exercise: "Cable Glute Kickback" },
             { id: 721, exercise: "Machine Hip Abductors" },
             { id: 722, exercise: "Machine Hip Adductors" },
+            { id: 723, exercise: "Standing Calf Raises"},
         ],
     },
     {

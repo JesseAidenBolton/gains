@@ -3,6 +3,7 @@ import {Inter} from 'next/font/google'
 import './globals.css'
 import {ClerkProvider} from '@clerk/nextjs'
 import Provider from "@/components/Provider";
+import {SelectedDateProvider} from "@/contexts/SelectedDateContext";
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -19,11 +20,13 @@ export default function RootLayout({
 }) {
   return (
       <ClerkProvider>
-          <html lang="en">
-          <Provider>
-              <body className={inter.className}>{children}</body>
-          </Provider>
-          </html>
+          <SelectedDateProvider>
+              <html lang="en">
+              <Provider>
+                  <body className={inter.className}>{children}</body>
+              </Provider>
+              </html>
+          </SelectedDateProvider>
       </ClerkProvider>
   )
 }
