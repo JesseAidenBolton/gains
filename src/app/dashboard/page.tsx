@@ -17,6 +17,7 @@ import axios from "axios";
 import { utcToZonedTime } from 'date-fns-tz';
 import Footer from "@/components/Footer";
 import {useSelectedDate} from "@/contexts/SelectedDateContext";
+import TimerComponent from "@/components/TimerComponent";
 
 type Props = {}
 
@@ -106,6 +107,10 @@ const DashboardPage = (props: Props) => {
         setIsAddExerciseDialogOpen(true)
     };
 
+    const handleTimerEnd = () => {
+        alert('Time is up!'); // Replace with an audio alert or a custom notification
+    };
+
 
     return (
         <>
@@ -123,6 +128,10 @@ const DashboardPage = (props: Props) => {
                                 {/* Centered Formatted Date */}
                                 <div className="flex-grow">
                                     <h1 className="text-xl sm:text-2xl font-bold text-gray-700 text-center">{formattedDate}</h1>
+                                </div>
+
+                                <div>
+                                    <TimerComponent onTimerEnd={handleTimerEnd} />
                                 </div>
 
                                 {/* User Button */}
