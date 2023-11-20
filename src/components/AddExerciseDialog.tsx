@@ -195,11 +195,11 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
                         <h4 className="text-2xl font-semibold mb-4">Sets for {exercise}</h4>
 
                         <div className="flex items-center justify-between mb-3">
-                            <Button onClick={decrease} disabled={numSets <= 1} className="text-white bg-primary hover:bg-primary-dark rounded-full p-2">
+                            <Button onClick={decrease} disabled={numSets <= 1} className="text-white bg-primary hover:bg-primary-dark p-2">
                                 <Minus className="w-5 h-5" />
                             </Button>
                             <Label className="text-lg">{numSets} {numSets === 1 ? 'Set' : 'Sets'}</Label>
-                            <Button onClick={increase} disabled={numSets >= 10} className="text-white bg-primary hover:bg-primary-dark rounded-full p-2">
+                            <Button onClick={increase} disabled={numSets >= 10} className="text-white bg-primary hover:bg-primary-dark p-2">
                                 <Plus className="w-5 h-5" />
                             </Button>
                         </div>
