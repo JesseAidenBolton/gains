@@ -115,12 +115,12 @@ const DashboardPage = (props: Props) => {
                         <div className="flex flex-col sm:flex-row justify-between items-center">
                             {/* Left-aligned items */}
                             <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-3 sm:mb-0">
-                                <Link href='/' passHref>
+                                {/*<Link href='/' passHref>
                                     <Button className="bg-primary hover:bg-primary-dark text-white" size="sm">
                                         <ArrowBigLeft className="mr-1 w-4 h-4" />
                                         Back
                                     </Button>
-                                </Link>
+                                </Link>*/}
                                 <div className="flex-grow">
                                     <CalendarComponent selectedDate={selectedDate} onDateChange={(newDate) => setSelectedDate(newDate)} />
                                 </div>
