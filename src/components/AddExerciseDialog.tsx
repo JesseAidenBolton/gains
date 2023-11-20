@@ -3,10 +3,11 @@ import {Button} from "@/components/ui/button";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
-import {Loader2, Minus, Plus} from "lucide-react";
+import {Loader2, Minus, Plus, Trash2} from "lucide-react";
 import {useMutation} from "@tanstack/react-query";
 import axios from "axios";
 import {Dialog, DialogContent, DialogTrigger} from "@/components/ui/dialog";
+import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 
 
 
@@ -56,6 +57,8 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        console.log("HANDLE SUBMIT")
 
         addExercise.mutate(undefined, {
             onSuccess: () => {
@@ -162,42 +165,75 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
         </div>
     ));
 
+    // State for showing the delete confirmation dialog
+
+    // Function to open the delete confirmation dialog
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+    const handleDeleteConfirmationOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setShowDeleteConfirmation(prev => !prev);
+    };
+
+
+
+    const confirmDelete = async () => {
+        if (id) {
+            await deleteExercise.mutateAsync(id);
+            setShowDeleteConfirmation(false);
+        }
+    };
+
+
 
     return (
+        <>
+            <Dialog open={isOpen} onOpenChange={onOpenChange}>
+                <DialogContent className="max-w-lg mx-auto p-6 overflow-y-auto h-full md:h-auto">
+                    <div className="space-y-4">
+                        <h4 className="text-2xl font-semibold mb-4">Sets for {exercise}</h4>
 
-        <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-lg mx-auto p-6 overflow-y-auto h-full md:h-auto">
-                <div className="space-y-4">
-                    <h4 className="text-2xl font-semibold mb-4">Sets for {exercise}</h4>
-
-                    <div className="flex items-center justify-between mb-3">
-                        <Button onClick={decrease} disabled={numSets <= 1} className="text-white bg-primary hover:bg-primary-dark rounded-full p-2">
-                            <Minus className="w-5 h-5" />
-                        </Button>
-                        <Label className="text-lg">{numSets} {numSets === 1 ? 'Set' : 'Sets'}</Label>
-                        <Button onClick={increase} disabled={numSets >= 10} className="text-white bg-primary hover:bg-primary-dark rounded-full p-2">
-                            <Plus className="w-5 h-5" />
-                        </Button>
-                    </div>
-
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        {setInputs}
-                        <div className="flex justify-end space-x-3 mt-4">
-                            <Button type="submit" className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
-                                {addExercise.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Save Exercise'}
+                        <div className="flex items-center justify-between mb-3">
+                            <Button onClick={decrease} disabled={numSets <= 1} className="text-white bg-primary hover:bg-primary-dark rounded-full p-2">
+                                <Minus className="w-5 h-5" />
                             </Button>
-                            {id && (
-                                <Button onClick={handleDelete} disabled={deleteExercise.isPending} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">
-                                    {deleteExercise.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Delete Exercise'}
-                                </Button>
-                            )}
+                            <Label className="text-lg">{numSets} {numSets === 1 ? 'Set' : 'Sets'}</Label>
+                            <Button onClick={increase} disabled={numSets >= 10} className="text-white bg-primary hover:bg-primary-dark rounded-full p-2">
+                                <Plus className="w-5 h-5" />
+                            </Button>
                         </div>
-                    </form>
-                </div>
-            </DialogContent>
-        </Dialog>
 
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            {setInputs}
+                            <div className="flex justify-end space-x-3 mt-4">
+                                <Button type="submit" className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
+                                    {addExercise.isPending ? (
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                    ) : (
+                                        'Save Exercise'
+                                    )}
+                                </Button>
+                                {id && (
+                                    <Button onClick={(e) => handleDeleteConfirmationOpen(e)} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">
+                                        {deleteExercise.isPending ? (
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                        ) : (
+                                            <>
+                                                <Trash2 />
+                                            </>
+                                        )}
+                                    </Button>
+                                )}
+                            </div>
+                        </form>
+                    </div>
+                </DialogContent>
+            </Dialog>
+            
+            <DeleteConfirmationDialog isOpen={showDeleteConfirmation} onClose={()=>setShowDeleteConfirmation(false)} onConfirmDelete={confirmDelete} isPending={deleteExercise.isPending} />
 
+        </>
     );
 };
 export default AddExerciseDialog;
