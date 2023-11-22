@@ -12,7 +12,10 @@ const exerciseList = [
             { id: 107, exercise: "Pushups" },
             { id: 108, exercise: "Cables Flyes" },
             { id: 109, exercise: "Chest Dips" },
-            { id: 110, exercise: "Machine Chest Press" },
+            { id: 110, exercise: "Incline Machine Chest Press" },
+            { id: 111, exercise: "Incline Hex Press" },
+            { id: 112, exercise: "Hex Press" },
+            { id: 113, exercise: "Machine Chest Press" },
         ],
     },
     {
@@ -45,6 +48,8 @@ const exerciseList = [
             { id: 309, exercise: "Chinups" },
             { id: 310, exercise: "Deficit Deadlift" },
             { id: 311, exercise: "Chest Supported Row" },
+            { id: 312, exercise: "Front Row" },
+
         ],
     },
     {
@@ -59,6 +64,9 @@ const exerciseList = [
             { id: 406, exercise: "Seated Triceps Press" },
             { id: 407, exercise: "One-Arm Overhead Extension" },
             { id: 408, exercise: "Close-Grip Pushups" },
+            { id: 409, exercise: "V-Bar Tricep Pushdown"},
+            { id: 410, exercise: "Rope Tricep Pushdown"},
+            { id: 411, exercise: "Rope Overhead Tricep Extension"}
         ],
     },
     {
@@ -76,6 +84,8 @@ const exerciseList = [
             { id: 509, exercise: "Bent-Over Reverse Flyes" },
             { id: 510, exercise: "Upright Rows" },
             { id: 511, exercise: "Rear Delt Fly"},
+            { id: 512, exercise: "Machine Lateral Raises"},
+
         ],
     },
     {
