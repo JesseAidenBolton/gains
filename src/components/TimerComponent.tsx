@@ -57,7 +57,7 @@ const TimerComponent: React.FC<TimerComponentProps> = ({ onTimerEnd }) => {
             {showButtons && (<div><div className="flex space-x-2">
                 <button
                     onClick={() => startTimer(30000)}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    className="bg-blue-500 hover:bg-blue-700 texnpmt-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 >
                     30s
                 </button>
