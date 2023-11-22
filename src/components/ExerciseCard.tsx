@@ -1,7 +1,7 @@
 // Define TypeScript types for props
 import {Pencil, Repeat, History, ChevronDown, ChevronUp} from "lucide-react";
 import {Button} from "@/components/ui/button";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import AddExerciseDialog from "@/components/AddExerciseDialog";
 import axios from "axios";
 import Link from "next/link";
@@ -24,9 +24,10 @@ interface ExerciseCardProps {
     exercise: Exercise;
     refetchExercises: () => void;
     date: Date | undefined;
+    globalCollapse: boolean;
 }
 
-const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, refetchExercises, date}) => {
+const ExerciseCard: React.FC<ExerciseCardProps & { globalCollapse: boolean }> = ({ exercise, refetchExercises, date, globalCollapse }) => {
     const exercisesArray = exercise.exercises as { name: string; sets: Set[] }[]; // Type assertion
 
     const [isToggleOn, setIsToggleOn] = useState(false);
@@ -37,7 +38,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, refetchExercises,
 
     const [isLoadingPrevious, setIsLoadingPrevious] = useState(false);
 
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(globalCollapse);
 
     const openEditDialog = () => {
         setIsEditDialogOpen(true)
@@ -64,6 +65,10 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, refetchExercises,
     const toggleCollapse = () => {
         setIsCollapsed(!isCollapsed)
     }
+
+    useEffect(() => {
+        setIsCollapsed(globalCollapse);
+    }, [globalCollapse]);
 
     return (
         <div className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition-shadow mb-4">
