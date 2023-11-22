@@ -161,9 +161,6 @@ const DashboardPage = (props: Props) => {
                         {exercises.map(exercise => (
                             <div key={exercise.id} className="border border-stone-300 rounded-lg overflow-hidden flex flex-col hover:shadow-xl transition hover:-translate-y-1">
                                 <ExerciseCard exercise={exercise} refetchExercises={refetch} date={selectedDate} />
-                               {/* <Link href={`/history/${exercise.name}?name=${exercise.name}`}>
-                                    <div className="text-blue-500 hover:text-blue-600">View History</div>
-                                </Link>*/}
                             </div>
                         ))}
                     </div>

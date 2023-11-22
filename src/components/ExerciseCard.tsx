@@ -1,5 +1,5 @@
 // Define TypeScript types for props
-import {Pencil, Repeat, History} from "lucide-react";
+import {Pencil, Repeat, History, ChevronDown, ChevronUp} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {useState} from "react";
 import AddExerciseDialog from "@/components/AddExerciseDialog";
@@ -37,6 +37,8 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, refetchExercises,
 
     const [isLoadingPrevious, setIsLoadingPrevious] = useState(false);
 
+    const [isCollapsed, setIsCollapsed] = useState(false);
+
     const openEditDialog = () => {
         setIsEditDialogOpen(true)
     }
@@ -59,47 +61,54 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, refetchExercises,
         }
     };
 
-    return (
+    const toggleCollapse = () => {
+        setIsCollapsed(!isCollapsed)
+    }
 
+    return (
         <div className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition-shadow mb-4">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-800">{exercise.name}</h2>
-                <div>
-                    <Button variant="ghost" onClick={openEditDialog} className="text-primary hover:text-primary-dark">
-                        <Pencil className="w-5 h-5" />
+                <div className="flex items-center">
+                    <Button variant="ghost" onClick={toggleCollapse} className="text-gray-600 hover:text-gray-800 mr-2">
+                        {isCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
                     </Button>
-                    <Button variant="ghost" onClick={togglePreviousSets} aria-label="Toggle previous sets" disabled={isLoadingPrevious}>
-                        <Repeat className="w-5 h-5" />
-                    </Button>
-                    <Link href={`/history/${encodeURIComponent(exercise.name)}?name=${encodeURIComponent(exercise.name)}`}>
-                        <Button className="flex items-center bg-gray-100 hover:bg-gray-200 text-gray-600">
-                            <History className="w-4 h-4 mr-1" />
-                            View History
-                        </Button>
-                    </Link>
                 </div>
             </div>
 
-            <div className="mt-3 text-gray-600">
-                <p className="uppercase font-semibold text-sm text-gray-500">Sets:</p>
-                <ul>
-                    {exercisesArray.map((exercise, index) => (
-                        <li key={index} className="mt-1">
-                            <span className="font-semibold">{exercise.name}</span>
-                            <div className="flex flex-wrap gap-2 mt-1">
-                                {(isToggleOn ? previousSets : exercise.sets).map((set, setIndex) => (
-                                    <span key={setIndex} className={`rounded-full px-3 py-1 text-sm ${isToggleOn ? 'bg-red-200' : 'bg-gray-200'}`}>
+            {isCollapsed ? null : (
+                <div className="mt-3 text-gray-600">
+                    <div className="flex justify-between items-center">
+                        <Button variant="ghost" onClick={openEditDialog} className="text-primary hover:text-primary-dark">
+                            <Pencil className="w-5 h-5" />
+                        </Button>
+                        <Button variant="ghost" onClick={togglePreviousSets} aria-label="Toggle previous sets" disabled={isLoadingPrevious}>
+                            <Repeat className="w-5 h-5" />
+                        </Button>
+                        <Link href={`/history/${encodeURIComponent(exercise.name)}?name=${encodeURIComponent(exercise.name)}`}>
+                            <Button className="flex items-center bg-gray-100 hover:bg-gray-200 text-gray-600">
+                                <History className="w-4 h-4 mr-1" />
+                                View History
+                            </Button>
+                        </Link>
+                    </div>
+                    <p className="uppercase font-semibold text-sm text-gray-500">Sets:</p>
+                    <ul>
+                        {exercisesArray.map((exercise, index) => (
+                            <li key={index} className="mt-1">
+                                <span className="font-semibold">{exercise.name}</span>
+                                <div className="flex flex-wrap gap-2 mt-1">
+                                    {(isToggleOn ? previousSets : exercise.sets).map((set, setIndex) => (
+                                        <span key={setIndex} className={`rounded-full px-3 py-1 text-sm ${isToggleOn ? 'bg-red-200' : 'bg-gray-200'}`}>
                                         {setIndex + 1}: {set.weight} kgs, {set.reps} reps
                                     </span>
-                                ))}
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-
-            {/* AddExerciseDialog for Editing */}
-            <div>
+                                    ))}
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
             {isEditDialogOpen && (
                 <AddExerciseDialog
                     isOpen={isEditDialogOpen}
@@ -111,8 +120,6 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, refetchExercises,
                     selectedDate={date}
                 />
             )}
-            </div>
-
         </div>
     );
 };
