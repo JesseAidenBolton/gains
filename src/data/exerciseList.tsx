@@ -16,6 +16,9 @@ const exerciseList = [
             { id: 111, exercise: "Incline Hex Press" },
             { id: 112, exercise: "Hex Press" },
             { id: 113, exercise: "Machine Chest Press" },
+            { id: 114, exercise: "High Cable Flyes" },
+            { id: 115, exercise: "Middle Cable Flyes" },
+            { id: 116, exercise: "Lower Cable Flyes" },
         ],
     },
     {
