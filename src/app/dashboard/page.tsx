@@ -43,12 +43,26 @@ interface Exercise {
 const DashboardPage = (props: Props) => {
 
     const { user } = useClerk();
+
     const userId = user?.id; // Access the user's ID
+
     const queryClient = useQueryClient();
 
     const { selectedDate, setSelectedDate } = useSelectedDate();
 
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const formattedDate = selectedDate ? format(selectedDate, 'EEE MMM dd yyyy') : 'No date selected';
+
+    const [selectedExercise, setSelectedExercise] = useState("");
+
+    const [isBodyDialogOpen, setIsBodyDialogOpen] = useState(false);
+
+    const [selectedBodyPart, setSelectedBodyPart] = useState("")
+
+    const [isExerciseDialogOpen, setIsExerciseDialogOpen] = useState(false);
+
+    const [isAddExerciseDialogOpen, setIsAddExerciseDialogOpen] = useState(false);
 
     const { data: exercises, isLoading, isError, refetch } = useQuery<Exercise[]>({
         queryKey: ['exercises', userId, selectedDate],
@@ -84,15 +98,15 @@ const DashboardPage = (props: Props) => {
         enabled: !!userId && !!selectedDate
     });
 
+    // State to track if all cards are collapsed
+    const [areAllCollapsed, setAreAllCollapsed] = useState(true);
 
-    const formattedDate = selectedDate ? format(selectedDate, 'EEE MMM dd yyyy') : 'No date selected';
+    // Function to toggle all cards
+    const toggleAllCards = () => {
+        setAreAllCollapsed(!areAllCollapsed);
+    };
 
-    const [selectedExercise, setSelectedExercise] = useState("");
 
-    const [isBodyDialogOpen, setIsBodyDialogOpen] = useState(false);
-    const [selectedBodyPart, setSelectedBodyPart] = useState("")
-    const [isExerciseDialogOpen, setIsExerciseDialogOpen] = useState(false);
-    const [isAddExerciseDialogOpen, setIsAddExerciseDialogOpen] = useState(false);
 
 
     const handleBodyPartSelected = (bodyPart:any) => {
@@ -151,6 +165,12 @@ const DashboardPage = (props: Props) => {
                         onBodyPartSelected={handleBodyPartSelected}
                     />
 
+                    <div className="flex justify-between items-center px-4">
+                        <Button onClick={toggleAllCards} className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
+                            {areAllCollapsed ? 'Expand All' : 'Collapse All'}
+                        </Button>
+                    </div>
+
                 {/* Display all the exercises. If no exercises, display a message */}
                 {isLoading ? (
                     <div>Loading...</div>
@@ -160,10 +180,7 @@ const DashboardPage = (props: Props) => {
                     <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {exercises.map(exercise => (
                             <div key={exercise.id} className="border border-stone-300 rounded-lg overflow-hidden flex flex-col hover:shadow-xl transition hover:-translate-y-1">
-                                <ExerciseCard exercise={exercise} refetchExercises={refetch} date={selectedDate} />
-                               {/* <Link href={`/history/${exercise.name}?name=${exercise.name}`}>
-                                    <div className="text-blue-500 hover:text-blue-600">View History</div>
-                                </Link>*/}
+                                <ExerciseCard exercise={exercise} refetchExercises={refetch} date={selectedDate} globalCollapse={areAllCollapsed} />
                             </div>
                         ))}
                     </div>
