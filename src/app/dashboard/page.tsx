@@ -1,7 +1,7 @@
 'use client'
 
 import {Button} from "@/components/ui/button";
-import {ArrowDownToLine, ArrowUpToLine, ClipboardEdit, Save, X} from "lucide-react";
+import {ArrowDownToLine, ArrowUpToLine, ClipboardEdit, Loader2, Save, X} from "lucide-react";
 import {useClerk, UserButton} from "@clerk/nextjs";
 import {Separator} from "@/components/ui/separator";
 import SelectBodyDialog from "@/components/SelectBodyDialog";
@@ -68,6 +68,8 @@ const DashboardPage = (props: Props) => {
     const [fetchedExercises, setFetchedExercises] = useState<Exercise[]>([]);
 
     const [isEditMode, setIsEditMode] = useState(false);
+
+    const [isSaving, setIsSaving] = useState(false);
 
     const { data: exercises, isLoading, isError, refetch } = useQuery<Exercise[]>({
         queryKey: ['exercises', userId, selectedDate],
@@ -148,10 +150,12 @@ const DashboardPage = (props: Props) => {
     };
 
     const handleSaveOrder = async () => {
+        setIsSaving(true); // Start loading
+
         const newOrder = fetchedExercises.map(exercise => exercise.id);
         try {
             await axios.post('/api/updateExerciseOrder', { newOrder, userId });
-            setIsEditMode(false); // Exit edit mode after saving
+            setIsEditMode(false);
             // Invalidate and refetch exercises
             if (userId && selectedDate) {
                 queryClient.invalidateQueries({
@@ -160,6 +164,9 @@ const DashboardPage = (props: Props) => {
             }
         } catch (error) {
             console.error('Error updating order:', error);
+            // Handle error
+        } finally {
+            setIsSaving(false); // End loading
         }
     };
 
@@ -213,10 +220,24 @@ const DashboardPage = (props: Props) => {
                                     }
                                 </Button>
                                 {isEditMode && (
-                                    <Button onClick={handleSaveOrder} className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
-                                        <Save className="mr-2"/> {/* Replace with your actual icon component */}
-                                        Save Order
+                                    <Button
+                                        onClick={handleSaveOrder}
+                                        className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg"
+                                        disabled={isSaving} // Disable the button when saving
+                                    >
+                                        {isSaving ? (
+                                            <>
+                                                <Loader2 className="mr-2 w-5 h-5 animate-spin" /> {/* Replace with your loading spinner icon */}
+                                                Saving...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Save className="mr-2"/> {/* Your regular icon */}
+                                                Save Order
+                                            </>
+                                        )}
                                     </Button>
+
                                 )}
                             </div>
 
