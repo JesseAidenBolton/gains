@@ -6,7 +6,7 @@ import {ArrowBigLeft} from "lucide-react";
 import {useClerk, UserButton} from "@clerk/nextjs";
 import {Separator} from "@/components/ui/separator";
 import SelectBodyDialog from "@/components/SelectBodyDialog";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import SelectExerciseDialog from "@/components/SelectExerciseDialog";
 import AddExerciseDialog from "@/components/AddExerciseDialog";
 import ExerciseCard from "@/components/ExerciseCard";
@@ -18,6 +18,7 @@ import { utcToZonedTime } from 'date-fns-tz';
 import Footer from "@/components/Footer";
 import {useSelectedDate} from "@/contexts/SelectedDateContext";
 import TimerComponent from "@/components/TimerComponent";
+import {DragDropContext, Draggable, Droppable} from "@hello-pangea/dnd";
 
 type Props = {}
 
@@ -36,6 +37,7 @@ interface Exercise {
     userId: string;
     date: Date;
     exercises: unknown
+    order: number;
 }
 
 
@@ -64,6 +66,10 @@ const DashboardPage = (props: Props) => {
 
     const [isAddExerciseDialogOpen, setIsAddExerciseDialogOpen] = useState(false);
 
+    const [fetchedExercises, setFetchedExercises] = useState<Exercise[]>([]);
+
+    const [isEditMode, setIsEditMode] = useState(false);
+
     const { data: exercises, isLoading, isError, refetch } = useQuery<Exercise[]>({
         queryKey: ['exercises', userId, selectedDate],
         queryFn: async () => {
@@ -89,7 +95,7 @@ const DashboardPage = (props: Props) => {
                         endDate: formattedEndOfDay
                     }
                 });
-                return response.data;
+                return response.data.sort((a, b) => a.order - b.order);
             } else {
                 // Handle the case when selectedDate is undefined
                 return [];
@@ -98,6 +104,14 @@ const DashboardPage = (props: Props) => {
         enabled: !!userId && !!selectedDate
     });
 
+
+    useEffect(() => {
+        if (exercises) {
+            setFetchedExercises(exercises);
+        }
+    }, [exercises]);
+
+
     // State to track if all cards are collapsed
     const [areAllCollapsed, setAreAllCollapsed] = useState(true);
 
@@ -105,8 +119,6 @@ const DashboardPage = (props: Props) => {
     const toggleAllCards = () => {
         setAreAllCollapsed(!areAllCollapsed);
     };
-
-
 
 
     const handleBodyPartSelected = (bodyPart:any) => {
@@ -125,6 +137,34 @@ const DashboardPage = (props: Props) => {
         //alert('Time is up!'); // Replace with an audio alert or a custom notification
     };
 
+    const onDragEnd = (result:any) => {
+
+        if (!result.destination) return;
+
+        const items = Array.from(fetchedExercises);
+        const [reorderedItem] = items.splice(result.source.index, 1);
+        items.splice(result.destination.index, 0, reorderedItem);
+
+        setFetchedExercises(items);
+    };
+
+    const handleSaveOrder = async () => {
+        const newOrder = fetchedExercises.map(exercise => exercise.id);
+        try {
+            await axios.post('/api/updateExerciseOrder', { newOrder, userId });
+            setIsEditMode(false); // Exit edit mode after saving
+            // Invalidate and refetch exercises
+            if (userId && selectedDate) {
+                queryClient.invalidateQueries({
+                    queryKey: ['exercises', userId, selectedDate]
+                });
+            }
+        } catch (error) {
+            console.error('Error updating order:', error);
+        }
+    };
+
+    console.log(`LOOKY ${JSON.stringify(fetchedExercises)}`)
 
     return (
         <>
@@ -156,8 +196,19 @@ const DashboardPage = (props: Props) => {
                         </div>
                     </div>
                     <Separator className="my-6" />
-{/*0eg, idl, y6bw*/}
-                {/*add exercise*/}
+
+                <div className="flex justify-between items-center px-4">
+                    <Button onClick={() => setIsEditMode(!isEditMode)} className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
+                        {isEditMode ? 'Cancel Edit' : 'Edit Order'}
+                    </Button>
+                    {isEditMode && (
+                        <Button onClick={handleSaveOrder} className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
+                            Save Order
+                        </Button>
+                    )}
+                </div>
+
+                {/*Add exercise*/}
                 <div className="grid sm:grid-cols-3 md:grid-cols-1 grid-cols-1 gap-2">
                     <SelectBodyDialog
                         isOpen={isBodyDialogOpen}
@@ -171,22 +222,50 @@ const DashboardPage = (props: Props) => {
                         </Button>
                     </div>
 
-                {/* Display all the exercises. If no exercises, display a message */}
+
+                    {/* Display all the exercises. If no exercises, display a message */}
                 {isLoading ? (
                     <div>Loading...</div>
                 ) : isError ? (
                     <div>Error loading exercises.</div>
-                ) : exercises && exercises.length > 0 ? (
-                    <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {exercises.map(exercise => (
-                            <div key={exercise.id} className="border border-stone-300 rounded-lg overflow-hidden flex flex-col hover:shadow-xl transition hover:-translate-y-1">
-                                <ExerciseCard exercise={exercise} refetchExercises={refetch} date={selectedDate} globalCollapse={areAllCollapsed} />
-                            </div>
-                        ))}
-                    </div>
                 ) : (
-                    <div className="text-center">
-                        <h2 className="text-xl text-gray-500">No exercises added. Click on Add to start.</h2>
+                    <div>
+                        {isEditMode && fetchedExercises && fetchedExercises.length > 0 ? (
+                            // Draggable exercises in edit mode
+                            <DragDropContext onDragEnd={onDragEnd}>
+                                <Droppable droppableId="exercises">
+                                    {(provided) => (
+                                        <div {...provided.droppableProps} ref={provided.innerRef} className="grid ...">
+                                            {fetchedExercises.map((exercise, index) => (
+                                                <Draggable key={exercise.id.toString()} draggableId={exercise.id.toString()} index={index}>
+                                                    {(provided) => (
+                                                        <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="border ...">
+                                                            <ExerciseCard exercise={exercise} refetchExercises={refetch} date={selectedDate} globalCollapse={areAllCollapsed} />
+                                                        </div>
+                                                    )}
+                                                </Draggable>
+                                            ))}
+                                            {provided.placeholder}
+                                        </div>
+                                    )}
+                                </Droppable>
+                            </DragDropContext>
+                        ) : (
+                            // Default exercise display when not in edit mode
+                            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                { exercises && exercises.length > 0 ? (
+                                    exercises.map(exercise => (
+                                        <div key={exercise.id} className="border ...">
+                                            <ExerciseCard exercise={exercise} refetchExercises={refetch} date={selectedDate} globalCollapse={areAllCollapsed} />
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="text-center">
+                                        <h2 className="text-xl text-gray-500">No exercises added. Click on Add to start.</h2>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 )}
 

@@ -28,7 +28,13 @@ interface ExerciseCardProps {
 }
 
 const ExerciseCard: React.FC<ExerciseCardProps & { globalCollapse: boolean }> = ({ exercise, refetchExercises, date, globalCollapse }) => {
+
+
+    console.log(`THIS IS: ${JSON.stringify(exercise)}`)
+
     const exercisesArray = exercise.exercises as { name: string; sets: Set[] }[]; // Type assertion
+
+    //console.log(`AND THEN ${JSON.stringify(exercisesArray)}`)
 
     const [isToggleOn, setIsToggleOn] = useState(false);
 
@@ -70,6 +76,7 @@ const ExerciseCard: React.FC<ExerciseCardProps & { globalCollapse: boolean }> = 
         setIsCollapsed(globalCollapse);
     }, [globalCollapse]);
 
+
     return (
         <div className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition-shadow mb-4">
             <div className="flex justify-between items-center">
@@ -99,11 +106,11 @@ const ExerciseCard: React.FC<ExerciseCardProps & { globalCollapse: boolean }> = 
                     </div>
                     <p className="uppercase font-semibold text-sm text-gray-500">Sets:</p>
                     <ul>
-                        {exercisesArray.map((exercise, index) => (
+                        {exercisesArray.map((exercises, index) => (
                             <li key={index} className="mt-1">
                                 <span className="font-semibold">{exercise.name}</span>
                                 <div className="flex flex-wrap gap-2 mt-1">
-                                    {(isToggleOn ? previousSets : exercise.sets).map((set, setIndex) => (
+                                    {(isToggleOn ? previousSets : exercises.sets).map((set, setIndex) => (
                                         <span key={setIndex} className={`rounded-full px-3 py-1 text-sm ${isToggleOn ? 'bg-red-200' : 'bg-gray-200'}`}>
                                         {setIndex + 1}: {set.weight} kgs, {set.reps} reps
                                     </span>

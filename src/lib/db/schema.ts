@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, jsonb } from 'drizzle-orm/pg-core';
+import {pgTable, serial, text, timestamp, jsonb, integer} from 'drizzle-orm/pg-core';
 
 interface Set {
     weight: string;
@@ -10,7 +10,7 @@ interface Exercise {
     sets: Set[];
     userId: string;
     date: Date;
-    exercises: { name: string; sets: Set[] }[];
+    exercises: { name: string; sets: Set[]; }[];
 }
 
 export const $workouts = pgTable('workouts', {
@@ -18,7 +18,8 @@ export const $workouts = pgTable('workouts', {
     name: text('name').notNull(),
     date: timestamp('date').notNull(),
     userId: text('user_id').notNull(),
-    exercises: jsonb<string>('exercises').notNull(), // Use string type for JSON serialization
+    exercises: jsonb<string>('exercises'),
+    order: integer('order')
 });
 
 export type WorkoutType = typeof $workouts.$inferInsert;
