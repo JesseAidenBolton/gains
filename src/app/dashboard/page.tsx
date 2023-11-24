@@ -156,7 +156,7 @@ const DashboardPage = (props: Props) => {
                         </div>
                     </div>
                     <Separator className="my-6" />
-
+{/*0eg, idl, y6bw*/}
                 {/*add exercise*/}
                 <div className="grid sm:grid-cols-3 md:grid-cols-1 grid-cols-1 gap-2">
                     <SelectBodyDialog

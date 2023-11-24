@@ -2,22 +2,29 @@
 
 import { db } from '@/lib/db';
 import { $workouts } from '@/lib/db/schema';
-import {asc, eq} from 'drizzle-orm';
+import {and, asc, eq} from 'drizzle-orm';
 import { NextResponse } from "next/server";
 import axios from "axios";
+import {auth} from "@clerk/nextjs";
 
 export async function GET(request: Request)  {
     const exerciseName = decodeURIComponent(request.url.slice(request.url.lastIndexOf('/') + 1));
+
+    const { userId } = auth();
+    if (!userId) {
+        return new NextResponse("unauthorized", { status: 401 });
+    }
 
     if (!exerciseName) {
         return new NextResponse("Invalid exercise name", { status: 400 });
     }
 
+
     try {
         const history = await db
             .select()
             .from($workouts)
-            .where(eq($workouts.name, exerciseName))
+            .where(and(eq($workouts.name, exerciseName), eq($workouts.userId, userId)))
             .orderBy(asc($workouts.date))
             .execute();
 
