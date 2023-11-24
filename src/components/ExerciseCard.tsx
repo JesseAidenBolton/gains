@@ -1,5 +1,5 @@
 // Define TypeScript types for props
-import {Pencil, Repeat, History, ChevronDown, ChevronUp} from "lucide-react";
+import {Pencil, Repeat, History, ChevronDown, ChevronUp, GripVertical} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {useEffect, useState} from "react";
 import AddExerciseDialog from "@/components/AddExerciseDialog";
@@ -25,12 +25,12 @@ interface ExerciseCardProps {
     refetchExercises: () => void;
     date: Date | undefined;
     globalCollapse: boolean;
+    isEditMode: boolean;
 }
 
-const ExerciseCard: React.FC<ExerciseCardProps & { globalCollapse: boolean }> = ({ exercise, refetchExercises, date, globalCollapse }) => {
+const ExerciseCard: React.FC<ExerciseCardProps & { globalCollapse: boolean }> = ({ exercise, refetchExercises, date, globalCollapse, isEditMode }) => {
 
 
-    console.log(`THIS IS: ${JSON.stringify(exercise)}`)
 
     const exercisesArray = exercise.exercises as { name: string; sets: Set[] }[]; // Type assertion
 
@@ -45,6 +45,17 @@ const ExerciseCard: React.FC<ExerciseCardProps & { globalCollapse: boolean }> = 
     const [isLoadingPrevious, setIsLoadingPrevious] = useState(false);
 
     const [isCollapsed, setIsCollapsed] = useState(globalCollapse);
+
+    const [isDragHandleActive, setIsDragHandleActive] = useState(false);
+
+    const handleMouseDown = () => {
+        setIsDragHandleActive(true);
+    };
+
+    const handleMouseUp = () => {
+        setIsDragHandleActive(false);
+    };
+
 
     const openEditDialog = () => {
         setIsEditDialogOpen(true)
@@ -80,6 +91,19 @@ const ExerciseCard: React.FC<ExerciseCardProps & { globalCollapse: boolean }> = 
     return (
         <div className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition-shadow mb-4">
             <div className="flex justify-between items-center">
+                {isEditMode && (
+                    <div
+                        className={`drag-handle-icon ${isDragHandleActive ? 'drag-handle-active' : ''}`}
+                        onMouseDown={handleMouseDown}
+                        onMouseUp={handleMouseUp}
+                        onTouchStart={handleMouseDown} // For touch devices
+                        onTouchEnd={handleMouseUp}
+                    >
+                        <div className="drag-handle mr-2">
+                            <GripVertical className="w-5 h-5 text-gray-500 cursor-grab" />
+                        </div>
+                    </div>
+                )}
                 <h2 className="text-2xl font-bold text-gray-800">{exercise.name}</h2>
                 <div className="flex items-center">
                     <Button variant="ghost" onClick={toggleCollapse} className="text-gray-600 hover:text-gray-800 mr-2">

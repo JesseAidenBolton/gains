@@ -75,3 +75,9 @@
   transition: max-height 0.3s ease-out;
   overflow: hidden;
 }
+
+.drag-handle-active {
+  /* Example effect: scale and change color */
+  transform: scale(1.1);
+
+}

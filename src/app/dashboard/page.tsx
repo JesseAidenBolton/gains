@@ -1,8 +1,7 @@
 'use client'
 
-import Link from "next/link";
 import {Button} from "@/components/ui/button";
-import {ArrowBigLeft} from "lucide-react";
+import {ArrowDownToLine, ArrowUpToLine, ClipboardEdit, Save, X} from "lucide-react";
 import {useClerk, UserButton} from "@clerk/nextjs";
 import {Separator} from "@/components/ui/separator";
 import SelectBodyDialog from "@/components/SelectBodyDialog";
@@ -164,7 +163,7 @@ const DashboardPage = (props: Props) => {
         }
     };
 
-    console.log(`LOOKY ${JSON.stringify(fetchedExercises)}`)
+
 
     return (
         <>
@@ -197,17 +196,51 @@ const DashboardPage = (props: Props) => {
                     </div>
                     <Separator className="my-6" />
 
-                <div className="flex justify-between items-center px-4">
-                    <Button onClick={() => setIsEditMode(!isEditMode)} className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
-                        {isEditMode ? 'Cancel Edit' : 'Edit Order'}
-                    </Button>
-                    {isEditMode && (
-                        <Button onClick={handleSaveOrder} className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
-                            Save Order
-                        </Button>
-                    )}
-                </div>
+                    <div className="px-4">
+                        <div className="flex flex-wrap justify-between items-center gap-2">
+                            {/* Edit Mode Toggle and Save Order Buttons */}
+                            <div className="flex flex-nowrap items-center gap-2">
+                                <Button onClick={() => setIsEditMode(!isEditMode)} className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
+                                    {isEditMode ?
+                                        <>
+                                            <X className="mr-2"/> {/* Replace with your actual icon component */}
+                                            Cancel Edit
+                                        </> :
+                                        <>
+                                            <ClipboardEdit className="mr-2"/> {/* Replace with your actual icon component */}
+                                            Edit Order
+                                        </>
+                                    }
+                                </Button>
+                                {isEditMode && (
+                                    <Button onClick={handleSaveOrder} className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
+                                        <Save className="mr-2"/> {/* Replace with your actual icon component */}
+                                        Save Order
+                                    </Button>
+                                )}
+                            </div>
 
+                            {/* Expand/Collapse All Button */}
+                            {!isEditMode && ( // Only shown when not in Edit Mode
+                                <Button onClick={toggleAllCards} className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
+                                    {areAllCollapsed ?
+                                        <>
+                                            <ArrowDownToLine className="mr-2"/> {/* Replace with your actual icon component */}
+                                            Expand All
+                                        </> :
+                                        <>
+                                            <ArrowUpToLine className="mr-2"/> {/* Replace with your actual icon component */}
+                                            Collapse All
+                                        </>
+                                    }
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+
+
+
+                    <div className="mt-4"></div>
                 {/*Add exercise*/}
                 <div className="grid sm:grid-cols-3 md:grid-cols-1 grid-cols-1 gap-2">
                     <SelectBodyDialog
@@ -216,11 +249,7 @@ const DashboardPage = (props: Props) => {
                         onBodyPartSelected={handleBodyPartSelected}
                     />
 
-                    <div className="flex justify-between items-center px-4">
-                        <Button onClick={toggleAllCards} className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
-                            {areAllCollapsed ? 'Expand All' : 'Collapse All'}
-                        </Button>
-                    </div>
+
 
 
                     {/* Display all the exercises. If no exercises, display a message */}
@@ -240,7 +269,7 @@ const DashboardPage = (props: Props) => {
                                                 <Draggable key={exercise.id.toString()} draggableId={exercise.id.toString()} index={index}>
                                                     {(provided) => (
                                                         <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="border ...">
-                                                            <ExerciseCard exercise={exercise} refetchExercises={refetch} date={selectedDate} globalCollapse={areAllCollapsed} />
+                                                            <ExerciseCard exercise={exercise} refetchExercises={refetch} date={selectedDate} globalCollapse={areAllCollapsed} isEditMode={isEditMode} />
                                                         </div>
                                                     )}
                                                 </Draggable>
@@ -256,7 +285,7 @@ const DashboardPage = (props: Props) => {
                                 { exercises && exercises.length > 0 ? (
                                     exercises.map(exercise => (
                                         <div key={exercise.id} className="border ...">
-                                            <ExerciseCard exercise={exercise} refetchExercises={refetch} date={selectedDate} globalCollapse={areAllCollapsed} />
+                                            <ExerciseCard exercise={exercise} refetchExercises={refetch} date={selectedDate} globalCollapse={areAllCollapsed} isEditMode={isEditMode} />
                                         </div>
                                     ))
                                 ) : (
