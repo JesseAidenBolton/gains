@@ -4,7 +4,35 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { $workouts } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import {eq, sql} from "drizzle-orm";
+import {FullQueryResults} from "@neondatabase/serverless";
+
+interface MaxOrderResult {
+    max_order: number | null;
+}
+
+const fetchMaxOrder = async (userId: string): Promise<number> => {
+    try {
+        // Execute the query without a specific generic type
+        const result = await db.execute(
+            sql`SELECT MAX("order") AS max_order FROM ${$workouts} WHERE ${$workouts.userId} = ${userId}`
+        );
+
+        // Check if rows are present and extract the max_order value
+        if (result.rows && result.rows.length > 0) {
+            const maxOrderRow = result.rows[0] as MaxOrderResult;
+            return maxOrderRow.max_order !== null ? maxOrderRow.max_order : 0;
+        }
+
+        return 0;
+    } catch (error) {
+        console.error("Error fetching max order:", error);
+        return 0;
+    }
+};
+
+
+
 
 export async function POST(req: Request) {
     const { userId } = auth();
@@ -12,11 +40,15 @@ export async function POST(req: Request) {
         return new NextResponse("unauthorized", { status: 401 });
     }
 
+
     try {
         const body = await req.json();
         const { sets, name, id, date } = body; // Add 'date' to the destructured fields
 
         if (id) {
+
+
+
             // Updating an existing exercise
             const exerciseToUpdate = {
                 name: name,
@@ -34,6 +66,10 @@ export async function POST(req: Request) {
                 return new NextResponse("exercise not found", { status: 404 });
             }
         } else {
+
+            const maxOrder = await fetchMaxOrder(userId);
+            const newOrder = maxOrder + 1;
+
             // Inserting a new exercise
             const exerciseDate = date ? new Date(date) : new Date(); // Use the provided date or default to the current date
             //console.log(exerciseDate)
@@ -41,7 +77,8 @@ export async function POST(req: Request) {
                 date: exerciseDate,
                 name: name,
                 userId: userId,
-                exercises: [{ sets: sets }]
+                exercises: [{ sets: sets }],
+                order: newOrder
             };
 
             await db.insert($workouts).values(newExercise).execute();

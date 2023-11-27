@@ -58,7 +58,6 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        console.log("HANDLE SUBMIT")
 
         addExercise.mutate(undefined, {
             onSuccess: () => {
