@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { $workouts } from "@/lib/db/schema";
 import {eq, sql} from "drizzle-orm";
-import {FullQueryResults} from "@neondatabase/serverless";
 
 interface MaxOrderResult {
     max_order: number | null;
@@ -13,7 +12,6 @@ interface MaxOrderResult {
 
 const fetchMaxOrder = async (userId: string): Promise<number> => {
     try {
-        // Execute the query without a specific generic type
         const result = await db.execute(
             sql`SELECT MAX("order") AS max_order FROM ${$workouts} WHERE ${$workouts.userId} = ${userId}`
         );

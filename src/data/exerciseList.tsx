@@ -19,6 +19,7 @@ const exerciseList = [
             { id: 114, exercise: "High Cable Flyes" },
             { id: 115, exercise: "Middle Cable Flyes" },
             { id: 116, exercise: "Lower Cable Flyes" },
+            { id: 117, exercise: "Machine Pectoral Fly"},
         ],
     },
     {
@@ -52,6 +53,7 @@ const exerciseList = [
             { id: 310, exercise: "Deficit Deadlift" },
             { id: 311, exercise: "Chest Supported Row" },
             { id: 312, exercise: "Front Row" },
+            { id: 313, exercise: "Chest Supported Low Row" },
 
         ],
     },
@@ -88,6 +90,8 @@ const exerciseList = [
             { id: 510, exercise: "Upright Rows" },
             { id: 511, exercise: "Rear Delt Fly"},
             { id: 512, exercise: "Machine Lateral Raises"},
+            { id: 513, exercise: "Cable Lateral Raises" },
+            { id: 514, exercise: "Cable Front Raises" },
 
         ],
     },

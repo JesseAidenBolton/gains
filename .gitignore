@@ -35,3 +35,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+/assets/Backbodymuscles_EPS_PNG_SVG/
+/assets/Eachmusclegroupseparate_backmuscle_EPS_PNG_SVG/
+/assets/Eachmusclegroupseparate_frontmuscle_EPS_PNG_SVG/
+/assets/Frontbodymuscles_EPS_PNG_SVG/
+/assets/Backbodymuscles_EPS_PNG_SVG.zip
+/assets/Bodyblackoutline_transparent_background_2.png
+/assets/Eachmusclegroupseparate_backmuscle_EPS_PNG_SVG.zip
+/assets/Eachmusclegroupseparate_frontmuscle_EPS_PNG_SVG.zip
+/assets/Frontbodymuscles_EPS_PNG_SVG.zip
