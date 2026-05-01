@@ -18,6 +18,7 @@ import Footer from "@/components/Footer";
 import {useSelectedDate} from "@/contexts/SelectedDateContext";
 import TimerComponent from "@/components/TimerComponent";
 import {DragDropContext, Draggable, Droppable} from "@hello-pangea/dnd";
+import RoutineTemplatesPanel from "@/components/RoutineTemplatesPanel";
 
 type Props = {}
 
@@ -202,6 +203,10 @@ const DashboardPage = (props: Props) => {
                             </div>
                         </div>
                     </div>
+                    <Separator className="my-6" />
+
+                    <RoutineTemplatesPanel selectedDate={selectedDate} refetchExercises={refetch} />
+
                     <Separator className="my-6" />
 
                     <div className="px-4">
