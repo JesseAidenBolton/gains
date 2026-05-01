@@ -1,11 +1,11 @@
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { $workouts } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function POST(req: Request) {
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
         return new NextResponse("unauthorized", { status: 401 });
     }

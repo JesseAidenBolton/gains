@@ -1,7 +1,7 @@
 // Define TypeScript types for props
 import {Pencil, Repeat, History, ChevronDown, ChevronUp, GripVertical} from "lucide-react";
 import {Button} from "@/components/ui/button";
-import {useEffect, useState} from "react";
+import {useEffect, useReducer, useState} from "react";
 import AddExerciseDialog from "@/components/AddExerciseDialog";
 import axios from "axios";
 import Link from "next/link";
@@ -44,7 +44,10 @@ const ExerciseCard: React.FC<ExerciseCardProps & { globalCollapse: boolean }> = 
 
     const [isLoadingPrevious, setIsLoadingPrevious] = useState(false);
 
-    const [isCollapsed, setIsCollapsed] = useState(globalCollapse);
+    const [isCollapsed, updateIsCollapsed] = useReducer(
+        (_state: boolean, nextState: boolean) => nextState,
+        globalCollapse
+    );
 
     const [isDragHandleActive, setIsDragHandleActive] = useState(false);
 
@@ -80,11 +83,11 @@ const ExerciseCard: React.FC<ExerciseCardProps & { globalCollapse: boolean }> = 
     };
 
     const toggleCollapse = () => {
-        setIsCollapsed(!isCollapsed)
+        updateIsCollapsed(!isCollapsed)
     }
 
     useEffect(() => {
-        setIsCollapsed(globalCollapse);
+        updateIsCollapsed(globalCollapse);
     }, [globalCollapse]);
 
 

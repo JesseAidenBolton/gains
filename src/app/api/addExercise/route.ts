@@ -1,6 +1,6 @@
 // /api/addExercise
 
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { $workouts } from "@/lib/db/schema";
@@ -18,7 +18,7 @@ const fetchMaxOrder = async (userId: string): Promise<number> => {
 
         // Check if rows are present and extract the max_order value
         if (result.rows && result.rows.length > 0) {
-            const maxOrderRow = result.rows[0] as MaxOrderResult;
+            const maxOrderRow = result.rows[0] as unknown as MaxOrderResult;
             return maxOrderRow.max_order !== null ? maxOrderRow.max_order : 0;
         }
 
@@ -33,7 +33,7 @@ const fetchMaxOrder = async (userId: string): Promise<number> => {
 
 
 export async function POST(req: Request) {
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
         return new NextResponse("unauthorized", { status: 401 });
     }

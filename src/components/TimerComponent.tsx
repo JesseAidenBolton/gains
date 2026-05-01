@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { Timer } from 'lucide-react';
 
 interface TimerComponentProps {
@@ -7,40 +7,41 @@ interface TimerComponentProps {
 
 const TimerComponent: React.FC<TimerComponentProps> = ({ onTimerEnd }) => {
     const [countdown, setCountdown] = useState(0);
-    const [activeTimer, setActiveTimer] = useState<NodeJS.Timeout | null>(null);
+    const activeTimer = useRef<NodeJS.Timeout | null>(null);
     const [showButtons, setShowButtons] = useState(false);
     const [showNotification, setShowNotification] = useState<boolean>(false);
 
 
     const startTimer = (duration: number) => {
         // Clear any existing timers
-        if (activeTimer) {
-            clearInterval(activeTimer);
+        if (activeTimer.current) {
+            clearInterval(activeTimer.current);
         }
 
         setCountdown(duration);
         const newTimer = setInterval(() => {
-            setCountdown((prevCountdown) => prevCountdown - 1000);
+            setCountdown((prevCountdown) => {
+                if (prevCountdown <= 1000) {
+                    clearInterval(newTimer);
+                    activeTimer.current = null;
+                    setShowNotification(true);
+                    onTimerEnd();
+                    return 0;
+                }
+
+                return prevCountdown - 1000;
+            });
         }, 1000);
-        setActiveTimer(newTimer);
+        activeTimer.current = newTimer;
     };
 
-    useEffect(() => {
-        if (countdown <= 0 && activeTimer) {
-            clearInterval(activeTimer);
-            setShowNotification(true);
-            onTimerEnd();
-            setActiveTimer(null);
-        }
-    }, [countdown, activeTimer, onTimerEnd]);
-
     const resetTimer = () => {
-        if (activeTimer) {
-            clearInterval(activeTimer);
+        if (activeTimer.current) {
+            clearInterval(activeTimer.current);
         }
         setShowNotification(false);
         setCountdown(0);
-        setActiveTimer(null);
+        activeTimer.current = null;
     };
 
 
@@ -89,7 +90,7 @@ const TimerComponent: React.FC<TimerComponentProps> = ({ onTimerEnd }) => {
             {showNotification && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 animate-pulse">
                     <div className="bg-gray-800 p-8 md:p-12 rounded-xl shadow-2xl border border-gray-700">
-                        <h2 className="text-3xl text-white font-bold mb-6 text-center">Time's Up!</h2>
+                        <h2 className="text-3xl text-white font-bold mb-6 text-center">Time&apos;s Up!</h2>
                         <div className="flex justify-center">
                             <button
                                 onClick={() => setShowNotification(false)}

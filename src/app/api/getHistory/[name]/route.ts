@@ -4,13 +4,12 @@ import { db } from '@/lib/db';
 import { $workouts } from '@/lib/db/schema';
 import {and, asc, eq} from 'drizzle-orm';
 import { NextResponse } from "next/server";
-import axios from "axios";
-import {auth} from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
 export async function GET(request: Request)  {
     const exerciseName = decodeURIComponent(request.url.slice(request.url.lastIndexOf('/') + 1));
 
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
         return new NextResponse("unauthorized", { status: 401 });
     }
