@@ -5,7 +5,7 @@ import {ArrowDownToLine, ArrowUpToLine, ClipboardEdit, Loader2, Save, X} from "l
 import {useClerk, UserButton} from "@clerk/nextjs";
 import {Separator} from "@/components/ui/separator";
 import SelectBodyDialog from "@/components/SelectBodyDialog";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import SelectExerciseDialog from "@/components/SelectExerciseDialog";
 import AddExerciseDialog from "@/components/AddExerciseDialog";
 import ExerciseCard from "@/components/ExerciseCard";
@@ -106,13 +106,6 @@ const DashboardPage = (props: Props) => {
     });
 
 
-    useEffect(() => {
-        if (exercises) {
-            setFetchedExercises(exercises);
-        }
-    }, [exercises]);
-
-
     // State to track if all cards are collapsed
     const [areAllCollapsed, setAreAllCollapsed] = useState(true);
 
@@ -170,6 +163,14 @@ const DashboardPage = (props: Props) => {
         }
     };
 
+    const handleEditModeToggle = () => {
+        if (!isEditMode) {
+            setFetchedExercises(exercises ?? []);
+        }
+
+        setIsEditMode(!isEditMode);
+    };
+
 
 
     return (
@@ -207,7 +208,7 @@ const DashboardPage = (props: Props) => {
                         <div className="flex flex-wrap justify-between items-center gap-2">
                             {/* Edit Mode Toggle and Save Order Buttons */}
                             <div className="flex flex-nowrap items-center gap-2">
-                                <Button onClick={() => setIsEditMode(!isEditMode)} className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
+                                <Button onClick={handleEditModeToggle} className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
                                     {isEditMode ?
                                         <>
                                             <X className="mr-2"/> {/* Replace with your actual icon component */}

@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useState} from "react";
 import {Button} from "@/components/ui/button";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Input} from "@/components/ui/input";
@@ -40,8 +40,8 @@ interface Exercise {
 
 const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenChange, exercise, lastSets, id,refetchExercises, selectedDate}) => {
 
-    const [numSets, setNumSets] = useState<number>(0);
-    const [sets, setSets] = useState<Set[]>([]);
+    const [numSets, setNumSets] = useState<number>(() => lastSets?.length ?? 0);
+    const [sets, setSets] = useState<Set[]>(() => lastSets ?? []);
 
     const addExercise = useMutation({
         mutationFn: async () => {
@@ -96,16 +96,6 @@ const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({ isOpen, onOpenCha
         setSets(newSets);
 
     };
-
-    useEffect(() => {
-
-        if (lastSets && lastSets.length > 0) {
-            // Set the number of sets
-            setNumSets(lastSets.length);
-
-            setSets(lastSets);
-        }
-    }, []);
 
     const deleteExercise = useMutation({
         mutationFn: async (exerciseId: number) => {
